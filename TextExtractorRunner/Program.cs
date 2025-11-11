@@ -37,7 +37,7 @@ try
     var title = document.DocumentInfo.Title ?? "The Great Gatsby";
     var author = document.DocumentInfo.Author ?? "F. Scott Fitzgerald";
     
-    var vectors = await EmbeddingsService.ExtractEmbeddings(document, ollamaEmbedModel);
+    var vectors = await EmbeddingsService.ExtractEmbeddings(document, ollamaEmbedModel, title, author);
     
 
  var final = "Completed embedding extraction for document '{title}' by {author} with {vectors.Count} pages.";

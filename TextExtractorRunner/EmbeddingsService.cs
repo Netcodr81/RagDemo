@@ -7,7 +7,7 @@ namespace TextExtractorRunner;
 
 public static class EmbeddingsService
 {
-    public static async Task<List<(string Content, int PageNumber, float[] Vector)>> ExtractEmbeddings(RadFixedDocument document, string embeddingModel)
+    public static async Task<List<(string Content, int PageNumber, float[] Vector)>> ExtractEmbeddings(RadFixedDocument document, string embeddingModel, string? documentTitle, string? author)
     {
         var ollamaUri = new Uri("http://localhost:11434");
         var client = new OllamaApiClient(ollamaUri);

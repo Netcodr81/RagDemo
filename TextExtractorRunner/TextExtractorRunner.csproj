@@ -10,10 +10,10 @@
     <ItemGroup>
       <ProjectReference Include="..\TextExtractor\TextExtractor.csproj" />
     </ItemGroup>
-
     <ItemGroup>
         <None Include="PDFs\**\*" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
+  
 
     <ItemGroup>
       <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.10" />
