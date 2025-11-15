@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/src/SharedKernel/Models/DocumentVector.cs">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/src/SharedKernel/Models/DocumentVector.cs" />
+              <option name="originalContent" value="using Microsoft.Extensions.VectorData;&#10;&#10;namespace SharedKernel.Models;&#10;&#10;public class DocumentVector&#10;{&#10;    [VectorStoreKey(StorageName = &quot;id&quot;)]&#10;    public Guid Id { get; set; }&#10;    &#10;    [VectorStoreData(StorageName = &quot;document_name&quot;)]&#10;    public required string DocumentName { get; set; }&#10;    &#10;    [VectorStoreData(StorageName = &quot;author&quot;)]&#10;    public required string Author { get; set; }&#10;    &#10;    [VectorStoreData(StorageName = &quot;page_number&quot;)]&#10;    public int PageNumber { get; set; }&#10;    &#10;    [VectorStoreData(StorageName = &quot;content&quot;)]&#10;    public required string Content { get; set; }&#10;    &#10;    [VectorStoreVector(512, DistanceFunction = DistanceFunction.CosineSimilarity, IndexKind = IndexKind.Hnsw, StorageName = &quot;document_embedding&quot;)]&#10;    public float[]? Embedding { get; set; }&#10;}" />
+              <option name="updatedContent" value="using Microsoft.Extensions.VectorData;&#10;&#10;namespace SharedKernel.Models;&#10;&#10;public class DocumentVector&#10;{&#10;    [VectorStoreKey(StorageName = &quot;id&quot;)]&#10;    public Guid Id { get; set; }&#10;    &#10;    [VectorStoreData(StorageName = &quot;document_name&quot;)]&#10;    public required string DocumentName { get; set; }&#10;    &#10;    [VectorStoreData(StorageName = &quot;author&quot;)]&#10;    public required string Author { get; set; }&#10;    &#10;    [VectorStoreData(StorageName = &quot;page_number&quot;)]&#10;    public int PageNumber { get; set; }&#10;    &#10;    [VectorStoreData(StorageName = &quot;content&quot;)]&#10;    public required string Content { get; set; }&#10;    &#10;    [VectorStoreVector(512, DistanceFunction = DistanceFunction.CosineSimilarity, IndexKind = IndexKind.Hnsw, StorageName = &quot;document_embedding&quot;)]&#10;    public float[]? Embedding { get; set; }&#10;}" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
