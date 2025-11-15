@@ -1,6 +1,4 @@
 ﻿using System.Text;
-using Qdrant.Client;
-using Qdrant.Client.Grpc;
 using SharedKernel.Constants;
 using SharedKernel.Models;
 using Telerik.Windows.Documents.Fixed.Model;
@@ -8,7 +6,7 @@ using EmbeddingGenerationOptions = Microsoft.Extensions.AI.EmbeddingGenerationOp
 
 namespace RagIndexer;
 
-public class IndexingService(StringEmbeddingGenerator embeddingGenerator, QdrantClient qdrantClient)
+public class IndexingService(StringEmbeddingGenerator embeddingGenerator, DocumentVectorStore vectorStore)
 {
     public async Task BuildDocumentIndex(RadFixedDocument document, string? documentTitle, string? author)
     {
@@ -29,7 +27,7 @@ public class IndexingService(StringEmbeddingGenerator embeddingGenerator, Qdrant
             {
                 Dimensions = 512
             });
-            var pageNumber = page.PageNo;
+            var pageNumber = document.Pages.IndexOf(page);
 
             var vectorArray = embedding[0].Vector.ToArray();
             
@@ -42,26 +40,7 @@ public class IndexingService(StringEmbeddingGenerator embeddingGenerator, Qdrant
                 Embedding = vectorArray
             };
             
-            await qdrantClient.UpsertAsync(
-                collectionName: VectorDbCollections.DocumentVectors,
-                points: new[]
-                {
-                    new PointStruct
-                    {
-                        Id = new PointId { Uuid = documentVector.Id.ToString() },
-                        Vectors = documentVector.Embedding,
-                        Payload =
-                        {
-                            ["document_name"] = documentVector.DocumentName,
-                            ["author"] = documentVector.Author,
-                            ["content"] = documentVector.Content,
-                            ["page_number"] = documentVector.PageNumber
-                        }
-                    }
-                }
-            );
-            
-            //TODO: Save content to database
+            await vectorStore.UpsertAsync(documentVector);
         }
     }
 }

@@ -1,11 +1,10 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Qdrant.Client;
 using Qdrant.Client.Grpc;
 using RagIndexer;
 using SharedKernel.Constants;
+using SharedKernel.Models;
 using Telerik.Windows.Documents.Fixed.FormatProviders.Pdf;
 
 var ollamaUri = new Uri("http://localhost:11434");
@@ -19,10 +18,13 @@ builder.AddOllamaEmbeddingGenerator(OllamaModels.NomicEmbedText, ollamaUri);
 builder.Services.AddSingleton<QdrantClient>(options => new QdrantClient("localhost"));
 builder.Services.AddQdrantVectorStore("localhost");
 
+// Remove registration for IVectorStoreRecordCollection since we now resolve IVectorStore directly
+
 builder.Services.AddLogging();
 
 
 builder.Services.AddSingleton<IndexingService>();
+builder.Services.AddSingleton<DocumentVectorStore>();
 
 
 var app = builder.Build();
@@ -30,9 +32,9 @@ var app = builder.Build();
 var indexingService = app.Services.GetRequiredService<IndexingService>();
 var quadrantClient = app.Services.GetRequiredService<QdrantClient>();
 
-var quadrantCollections = await quadrantClient.CollectionExistsAsync(VectorDbCollections.DocumentVectors);
+var collectionExists = await quadrantClient.CollectionExistsAsync(VectorDbCollections.DocumentVectors);
 
-if(!quadrantCollections)
+if(!collectionExists)
 {
     await quadrantClient.CreateCollectionAsync(collectionName: VectorDbCollections.DocumentVectors, vectorsConfig: new VectorParams
     {
@@ -41,13 +43,11 @@ if(!quadrantCollections)
     });
 }
 
-
-
-string pdfPath = Path.Combine(Directory.GetCurrentDirectory(), "PDFs", "Grimms' Fairy Tales.pdf");
+string pdfPath = Path.Combine(Directory.GetCurrentDirectory(), "PDFs", "The Great Gatsby.pdf");
 
 if (!File.Exists(pdfPath))
 {
-    Console.WriteLine("$PDF file not found at path: {pdfPath}");
+    Console.WriteLine($"$PDF file not found at path: {pdfPath}");
     return;
 }
 
@@ -55,15 +55,15 @@ try
 {
     using var fileStream = new FileStream(pdfPath, FileMode.Open);
     var pdfFormatProvider = new PdfFormatProvider();
-    var document = pdfFormatProvider.Import(fileStream);    
+    var document = pdfFormatProvider.Import(fileStream, timeout: null);    
     
-    var title = document.DocumentInfo.Title ?? "Grimms' Fairy Tales";
-    var author = document.DocumentInfo.Author ?? "Brothers Grimm";
+    var title = document.DocumentInfo.Title ?? "The Great Gatsby";
+    var author = document.DocumentInfo.Author ?? "F. Scott Fitzgerald";
 
     await indexingService.BuildDocumentIndex(document, title, author);
     
 
-    var final = "Completed embedding extraction for document '{title}' by {author} with {vectors.Count} pages.";
+    Console.WriteLine($"Completed embedding extraction for document '{title}' by {author}.");
 }
 catch (Exception exception)
 {
