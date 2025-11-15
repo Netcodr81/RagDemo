@@ -5,7 +5,7 @@ using Microsoft.SemanticKernel;
 using Qdrant.Client;
 using Qdrant.Client.Grpc;
 using RagIndexer;
-using RagIndexer.Data;
+using SharedKernel.Constants;
 using Telerik.Windows.Documents.Fixed.FormatProviders.Pdf;
 
 var ollamaUri = new Uri("http://localhost:11434");
@@ -43,7 +43,7 @@ if(!quadrantCollections)
 
 
 
-string pdfPath = Path.Combine(Directory.GetCurrentDirectory(), "PDFs", "The Great Gatsby.pdf");
+string pdfPath = Path.Combine(Directory.GetCurrentDirectory(), "PDFs", "Grimms' Fairy Tales.pdf");
 
 if (!File.Exists(pdfPath))
 {
@@ -57,10 +57,10 @@ try
     var pdfFormatProvider = new PdfFormatProvider();
     var document = pdfFormatProvider.Import(fileStream);    
     
-    var title = document.DocumentInfo.Title ?? "The Great Gatsby";
-    var author = document.DocumentInfo.Author ?? "F. Scott Fitzgerald";
+    var title = document.DocumentInfo.Title ?? "Grimms' Fairy Tales";
+    var author = document.DocumentInfo.Author ?? "Brothers Grimm";
 
-    // await indexingService.BuildDocumentIndex(document, title, author);
+    await indexingService.BuildDocumentIndex(document, title, author);
     
 
     var final = "Completed embedding extraction for document '{title}' by {author} with {vectors.Count} pages.";

@@ -6,10 +6,6 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\TextExtractor\TextExtractor.csproj" />
-    </ItemGroup>
     <ItemGroup>
         <None Include="PDFs\**\*" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>

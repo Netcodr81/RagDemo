@@ -1,7 +1,8 @@
 ﻿using System.Text;
 using Qdrant.Client;
-using RagIndexer.Data;
-using RagIndexer.Models;
+using Qdrant.Client.Grpc;
+using SharedKernel.Constants;
+using SharedKernel.Models;
 using Telerik.Windows.Documents.Fixed.Model;
 using EmbeddingGenerationOptions = Microsoft.Extensions.AI.EmbeddingGenerationOptions;
 
@@ -41,6 +42,26 @@ public class IndexingService(StringEmbeddingGenerator embeddingGenerator, Qdrant
                 Embedding = vectorArray
             };
             
+            await qdrantClient.UpsertAsync(
+                collectionName: VectorDbCollections.DocumentVectors,
+                points: new[]
+                {
+                    new PointStruct
+                    {
+                        Id = new PointId { Uuid = documentVector.Id.ToString() },
+                        Vectors = documentVector.Embedding,
+                        Payload =
+                        {
+                            ["document_name"] = documentVector.DocumentName,
+                            ["author"] = documentVector.Author,
+                            ["content"] = documentVector.Content,
+                            ["page_number"] = documentVector.PageNumber
+                        }
+                    }
+                }
+            );
+            
+            //TODO: Save content to database
         }
     }
 }
