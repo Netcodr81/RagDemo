@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.SemanticKernel;
 using Qdrant.Client;
-using RagApi.Services;
 using Scalar.AspNetCore;
+using SemanticSearchApi.Services;
 using SharedKernel.Constants;
 
 var builder = WebApplication.CreateBuilder(args);
