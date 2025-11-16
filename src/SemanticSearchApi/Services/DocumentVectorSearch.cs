@@ -39,7 +39,7 @@ public class DocumentVectorSearch(StringEmbeddingGenerator embeddingGenerator, Q
 
         var embedding = await embeddingGenerator.GenerateAsync([query], new EmbeddingGenerationOptions
         {
-            Dimensions = 512
+            Dimensions = OllamaModels.NomicEmbedTextDimensions
         });
 
         var queryVector = embedding[0].Vector.ToArray();
@@ -59,7 +59,6 @@ public class DocumentVectorSearch(StringEmbeddingGenerator embeddingGenerator, Q
                 DocumentName = r.Payload.TryGetValue("document_name", out var docName) ? docName.StringValue : string.Empty,
                 Author = r.Payload.TryGetValue("author", out var author) ? author.StringValue : string.Empty,
                 Content = r.Payload.TryGetValue("content", out var content) ? content.StringValue : string.Empty,
-                PageNumber = r.Payload.TryGetValue("page_number", out var page) ? (int)page.IntegerValue : -1,
                 Embedding = includeEmbedding && r.Vectors?.Vector?.Data != null ? r.Vectors.Vector.Data.ToArray() : null
             };
             

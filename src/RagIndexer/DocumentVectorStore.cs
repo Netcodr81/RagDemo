@@ -22,7 +22,6 @@ public class DocumentVectorStore(QdrantClient client)
                         ["document_name"] = vector.DocumentName,
                         ["author"] = vector.Author,
                         ["content"] = vector.Content,
-                        ["page_number"] = vector.PageNumber
                     }
                 }
             }
