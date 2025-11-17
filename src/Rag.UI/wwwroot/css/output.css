@@ -925,8 +925,17 @@
   .ms-3 {
     margin-inline-start: calc(var(--spacing) * 3);
   }
+  .mt-1 {
+    margin-top: calc(var(--spacing) * 1);
+  }
   .mt-2 {
     margin-top: calc(var(--spacing) * 2);
+  }
+  .mt-3 {
+    margin-top: calc(var(--spacing) * 3);
+  }
+  .mt-4 {
+    margin-top: calc(var(--spacing) * 4);
   }
   .mt-5 {
     margin-top: calc(var(--spacing) * 5);
@@ -1462,6 +1471,9 @@
   .w-64 {
     width: calc(var(--spacing) * 64);
   }
+  .w-\[100px\] {
+    width: 100px;
+  }
   .w-full {
     width: 100%;
   }
@@ -1607,6 +1619,9 @@
   }
   .justify-start {
     justify-content: flex-start;
+  }
+  .gap-2 {
+    gap: calc(var(--spacing) * 2);
   }
   .gap-3 {
     gap: calc(var(--spacing) * 3);
@@ -1866,6 +1881,9 @@
       background-color: color-mix(in oklab, var(--color-gray-900) 50%, transparent);
     }
   }
+  .bg-green-700 {
+    background-color: var(--color-green-700);
+  }
   .bg-neutral-primary {
     background-color: var(--color-neutral-primary);
   }
@@ -1883,6 +1901,12 @@
   }
   .bg-ocio-blue-500 {
     background-color: var(--color-ocio-blue-500);
+  }
+  .bg-orange-700 {
+    background-color: var(--color-orange-700);
+  }
+  .bg-red-700 {
+    background-color: var(--color-red-700);
   }
   .bg-transparent {
     background-color: transparent;
@@ -2066,6 +2090,15 @@
   .pb-20 {
     padding-bottom: calc(var(--spacing) * 20);
   }
+  .pl-4 {
+    padding-left: calc(var(--spacing) * 4);
+  }
+  .pl-8 {
+    padding-left: calc(var(--spacing) * 8);
+  }
+  .pl-10 {
+    padding-left: calc(var(--spacing) * 10);
+  }
   .datatable-empty {
     .datatable-wrapper .datatable-table & {
       text-align: center;
@@ -2235,6 +2268,9 @@
   }
   .text-ocio-blue-800 {
     color: var(--color-ocio-blue-800);
+  }
+  .text-red-600 {
+    color: var(--color-red-600);
   }
   .text-white {
     color: var(--color-white);
@@ -2511,6 +2547,13 @@
     &:hover {
       @media (hover: hover) {
         accent-color: var(--color-ocio-blue-600);
+      }
+    }
+  }
+  .hover\:accent-red-600 {
+    &:hover {
+      @media (hover: hover) {
+        accent-color: var(--color-red-600);
       }
     }
   }

@@ -1,4 +1,6 @@
 ﻿@page "/semantic-search"
+@using System.ComponentModel.DataAnnotations
+@using Rag.UI.Models
 @using SharedKernel.ResponseModels
 
 @inject IHttpClientFactory HttpClientFactory
@@ -6,29 +8,49 @@
 <PageTitle>Semantic Search</PageTitle>
 
 <div class="p-4 grid grid-cols-1 gap-6 max-w-5xl mx-auto">
-    <div class="flex flex-row gap-4 justify-center">
-        <InputText class="rounded-md p-3 w-2/3 border border-slate-400 dark:bg-white dark:border-b-ocio-blue-400" @bind-Value="Query" placeholder="Search the collection" aria-label="Search" autofocus />
-        <button class="rounded-md bg-ocio-blue-500 hover:accent-ocio-blue-600 text-white p-3" @onclick="SearchAsync">Search</button>
-    </div>
+    <EditForm Model="@SearchModel" OnValidSubmit="SearchAsync">
+        <DataAnnotationsValidator />
+        <div class="flex flex-col gap-2">
+            <div class="flex flex-row gap-4 justify-center">
+                <div class="w-2/3 flex flex-col">
+                    <InputText class="rounded-md p-3 border border-slate-400 dark:bg-white dark:border-b-ocio-blue-400"
+                               @bind-Value="SearchModel.Query" @onkeydown="HandleKeyDown" placeholder="Search the collection"
+                               aria-label="Search" autofocus/>
+                </div>
+                <button type="submit" class="rounded-md bg-ocio-blue-500 hover:accent-ocio-blue-600 text-white p-3 cursor-pointer w-[100px]">
+                    Search
+                </button>
+                <button type="button" class="rounded-md bg-red-700 hover:accent-red-600 text-white p-3 cursor-pointer w-[100px]"
+                        @onclick="ClearResults">Clear
+                </button>
+            </div>
+            <div>
+                <ValidationMessage For="@(() => SearchModel.Query)" class="text-red-600 text-lg mt-2 font-semibold pl-10" />
+            </div>
+        </div>
+    </EditForm>
 
     @if (IsLoading)
     {
-        <div class="mt-5 flex justify-center flew-row font-semibold text-ocio-blue-600 dark:text-white text-2xl">Searching…</div>
+        <div class="mt-5 flex justify-center flew-row font-semibold text-ocio-blue-600 dark:text-white text-2xl">
+            Searching…
+        </div>
     }
     else if (Results is not null && Results.Items.Count > 0)
     {
-       
         @foreach (var item in Results.Items)
         {
             var itemIndex = Results.Items.IndexOf(item);
             var isExpanded = ExpandedItems.Contains(itemIndex);
-            
-            <div class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+
+            <div
+                class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                 <div class="flex justify-between items-start mb-3">
                     <h5 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                         @item.DocumentName
                     </h5>
-                    <span class="bg-ocio-blue-100 text-ocio-blue-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-ocio-blue-900 dark:text-ocio-blue-300">
+                    <span
+                        class="bg-ocio-blue-100 text-ocio-blue-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-ocio-blue-900 dark:text-ocio-blue-300">
                         @item.RelevanceScore%
                     </span>
                 </div>
@@ -39,30 +61,32 @@
                     <p class="@($"font-normal text-gray-700 dark:text-gray-400 {(isExpanded ? "" : "line-clamp-3")}")">
                         @item.Content
                     </p>
-                    <button @onclick="() => ToggleExpand(itemIndex)" 
+                    <button @onclick="() => ToggleExpand(itemIndex)"
                             class="mt-2 text-sm text-ocio-blue-600 hover:text-ocio-blue-800 dark:text-ocio-blue-400 dark:hover:text-ocio-blue-300 font-medium">
                         @(isExpanded ? "Show less" : "Show more...")
                     </button>
                 </div>
             </div>
         }
-       
     }
-    else if (HasSearched)
+    else if (HasSearched && Results is not null)
     {
-        <div class="no-results">No results found.</div>
+        <div class="mt-5 flex justify-center flew-row font-semibold text-ocio-blue-600 dark:text-white text-2xl">No
+            Results Found
+        </div>
     }
 </div>
 
-
 @code {
-    private string Query { get; set; } = string.Empty;
+    private SearchFormModel SearchModel { get; set; } = new();
     private bool IsLoading { get; set; }
     private bool HasSearched { get; set; }
     private SemanticSearchResponse? Results { get; set; }
     private HttpClient ApiClient => HttpClientFactory.CreateClient(HttpClients.RagApiClient);
     private HashSet<int> ExpandedItems { get; set; } = new();
 
+
+    
     private void ToggleExpand(int itemIndex)
     {
         if (ExpandedItems.Contains(itemIndex))
@@ -75,9 +99,23 @@
         }
     }
 
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SearchAsync();
+        }
+    }
+
+    private void ClearResults()
+    {
+        Results = null;
+        SearchModel.Query = string.Empty;
+    }
+
     private async Task SearchAsync()
     {
-        if (string.IsNullOrWhiteSpace(Query))
+        if (string.IsNullOrWhiteSpace(SearchModel.Query))
         {
             Results = null;
             return;
@@ -92,7 +130,7 @@
         try
         {
             // Build a relative URL (HttpClient has a BaseAddress configured). Escape the query string.
-            var url = $"semantic-search?query={Uri.EscapeDataString(Query)}&topK=10&includeEmbedding=false";
+            var url = $"semantic-search?query={Uri.EscapeDataString(SearchModel.Query)}&topK=10&includeEmbedding=false";
 
             // Use GetFromJsonAsync to deserialize directly into the response model
             Results = await ApiClient.GetFromJsonAsync<SemanticSearchResponse>(url);
@@ -109,5 +147,5 @@
             StateHasChanged();
         }
     }
-  
 }
+
