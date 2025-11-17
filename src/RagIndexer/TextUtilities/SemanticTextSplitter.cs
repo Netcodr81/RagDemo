@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using OllamaSharp;
 
-namespace RagIndexer.TextUtilitites;
+namespace RagIndexer.TextUtilities;
 
 public enum GroupingStrategy
 {

@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using RagIndexer.TextUtilitites;
+using RagIndexer.TextUtilities;
 using SharedKernel.Constants;
 using SharedKernel.Models;
 using EmbeddingGenerationOptions = Microsoft.Extensions.AI.EmbeddingGenerationOptions;

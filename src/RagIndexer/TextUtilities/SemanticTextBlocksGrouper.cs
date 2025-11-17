@@ -2,7 +2,7 @@
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.AI;
 
-namespace RagIndexer.TextUtilitites;
+namespace RagIndexer.TextUtilities;
 
 public static class SemanticTextBlocksGrouper
 {

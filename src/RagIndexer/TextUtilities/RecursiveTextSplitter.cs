@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace RagIndexer.TextUtilitites;
+namespace RagIndexer.TextUtilities;
 
 public static class RecursiveTextSplitter
 {

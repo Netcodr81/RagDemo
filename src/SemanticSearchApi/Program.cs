@@ -1,10 +1,9 @@
-using Microsoft.AspNetCore.Mvc;
+using Carter;
 using Microsoft.SemanticKernel;
 using Qdrant.Client;
 using Scalar.AspNetCore;
 using SemanticSearchApi.Services;
 using SharedKernel.Constants;
-using SharedKernel.ResponseModels;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +34,8 @@ builder.Services.AddSingleton<DocumentVectorSearch>();
 
 builder.Services.AddLogging();
 
+builder.Services.AddCarter();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -49,28 +50,9 @@ app.UseHttpsRedirection();
 // Enable CORS for local development origins before mapping endpoints
 app.UseCors("AllowLocalDev");
 
-app.MapGet("/semantic-search", async Task<IResult> (
-    [FromQuery] string query,
-    [FromQuery] int? topK,
-    [FromQuery] bool? includeEmbedding,
-    [FromServices] DocumentVectorSearch search
-) =>
-{
-    var results = await search.SearchAsync(query, topK ?? 5, includeEmbedding ?? false);
-    return TypedResults.Ok(new SemanticSearchResponse
-    {
-        Items = !results.Any()? [] : results.Select(r => new Item(r.Document.DocumentName ?? string.Empty, r.Document.Author ?? string.Empty, r.Document.Content ?? string.Empty, 
-            RelevanceScore: Math.Round((decimal)r.Score * 100, 2))).ToList()
-    });
-    
-}).Produces<SemanticSearchResponse>();
 
-app.MapGet("collections", async Task<IResult> ([FromServices] QdrantClient qdrantClient) =>
-{
-    var collections = await qdrantClient.ListFullSnapshotsAsync();
-    return TypedResults.Ok(collections);
-    
-});
 
+
+app.MapCarter();
 
 await app.RunAsync();
