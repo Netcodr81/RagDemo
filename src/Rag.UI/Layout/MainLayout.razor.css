@@ -1,0 +1,8 @@
+﻿/* MainLayout component-scoped styles */
+/* Most styling is handled by Flowbite and Tailwind CSS classes */
+
+/* Ensure smooth scrolling for the main content */
+main {
+    scroll-behavior: smooth;
+}
+

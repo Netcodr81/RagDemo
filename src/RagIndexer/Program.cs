@@ -46,7 +46,7 @@ if(!collectionExists)
 }
 
 
-string mdPath = Path.Combine(Directory.GetCurrentDirectory(), "Markdown", "The Three Little Pigs.md");
+string mdPath = Path.Combine(Directory.GetCurrentDirectory(), "Markdown", "1984.md");
 
 if (!File.Exists(mdPath))
 {
@@ -58,8 +58,8 @@ try
 {
     var document = await File.ReadAllTextAsync(mdPath);
 
-    var title = "The Three Little Pigs";
-    var author = "Joseph Jacobs";
+    var title = "1984";
+    var author = "George Orwell";
 
     await indexingService.BuildDocumentIndex(document, title, author);
 

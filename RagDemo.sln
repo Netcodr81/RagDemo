@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SemanticSearchApi", "src\Se
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedKernel", "src\SharedKernel\SharedKernel.csproj", "{39CD3983-9C62-48A7-BFD7-5B572A0F4BE9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rag.UI", "src\Rag.UI\Rag.UI.csproj", "{2B749E6C-6611-4954-82EE-D256A3691BA7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{39CD3983-9C62-48A7-BFD7-5B572A0F4BE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39CD3983-9C62-48A7-BFD7-5B572A0F4BE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39CD3983-9C62-48A7-BFD7-5B572A0F4BE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B749E6C-6611-4954-82EE-D256A3691BA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B749E6C-6611-4954-82EE-D256A3691BA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B749E6C-6611-4954-82EE-D256A3691BA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B749E6C-6611-4954-82EE-D256A3691BA7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

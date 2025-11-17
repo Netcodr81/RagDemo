@@ -1,0 +1,50 @@
+﻿<nav class="bg-ocio-blue-500 border-b border-gray-200 px-4 py-2.5 dark:bg-gray-800 dark:border-gray-700 fixed left-0 right-0 top-0 z-50">
+    <div class="flex flex-wrap justify-between items-center">
+        <div class="flex justify-start items-center">
+            <button
+                @onclick="ToggleSidebar"
+                type="button"
+                class="p-2 mr-2 text-white rounded-lg cursor-pointer md:hidden hover:text-gray-900 hover:bg-gray-100 focus:bg-gray-100 dark:focus:bg-gray-700 focus:ring-2 focus:ring-gray-100 dark:focus:ring-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                <svg aria-hidden="true" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="sr-only">Toggle sidebar</span>
+            </button>
+            <a href="" class="flex items-center justify-between mr-4">
+                <span class="self-center text-2xl font-semibold whitespace-nowrap text-white">RAG.UI</span>
+            </a>
+        </div>
+        <div class="justify-end">
+            <ThemeToggler/>
+        </div>
+    </div>
+</nav>
+
+<aside class="fixed top-0 left-0 z-40 w-64 h-screen pt-14 transition-transform @(sidebarHidden ? "-translate-x-full" : "") bg-white border-r border-gray-200 md:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
+       aria-label="Sidenav"
+       id="drawer-navigation">
+    <div class="overflow-y-auto py-5 px-3 h-full bg-white dark:bg-gray-800 pb-20">
+        <ul class="space-y-2">
+            <li>
+                <NavLink href="/semantic-search" Match="NavLinkMatch.All"  ActiveClass="dark:bg-gray-900 bg-gray-300" 
+                         class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white hover:bg-gray-400 dark:hover:bg-gray-700 group">
+                    <svg aria-hidden="true" class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" 
+                         fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z" />
+                    </svg>
+                    <span class="ml-3">Semantic Search</span>
+                </NavLink>
+            </li>
+        </ul>
+    </div>
+</aside>
+
+@code {
+    private bool sidebarHidden = true;
+
+    private void ToggleSidebar()
+    {
+        sidebarHidden = !sidebarHidden;
+    }
+
+}

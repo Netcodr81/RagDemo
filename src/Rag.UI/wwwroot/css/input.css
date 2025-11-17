@@ -1,0 +1,44 @@
+﻿@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Shantell+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+@import "flowbite/src/themes/enterprise";
+
+@plugin "flowbite/plugin";
+
+@source "../../node_modules/flowbite";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+
+    --breakpoint-*: initial;
+    --breakpoint-mobile: 0px;
+    --breakpoint-tablet: 481px;
+    --breakpoint-laptop: 769px;
+    --breakpoint-desktop: 1025px;
+
+    --font-*: initial;
+    --font-outfit: Outfit, sans-serif;
+
+    --breakpoint-2xsm: 375px;
+    --breakpoint-xsm: 425px;
+    --breakpoint-3xl: 2000px;
+    --breakpoint-sm: 640px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 1024px;
+    --breakpoint-xl: 1280px;
+    --breakpoint-2xl: 1536px;
+
+    --color-ocio-blue-50: #D9E3E8;
+    --color-ocio-blue-100: #B4C7D2;
+    --color-ocio-blue-200: #8FACBC;
+    --color-ocio-blue-300: #6992A6;
+    --color-ocio-blue-400: #417991;
+    --color-ocio-blue-500: #00607C;
+    --color-ocio-blue-600: #0D5066;
+    --color-ocio-blue-700: #124052;
+    --color-ocio-blue-800: #13313E;
+    --color-ocio-blue-900: #12232B;
+    --color-ocio-blue-950: #0D1519;
+
+}
