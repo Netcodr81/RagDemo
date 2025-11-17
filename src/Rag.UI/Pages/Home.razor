@@ -1,0 +1,12 @@
+﻿@page "/"
+@inject NavigationManager Navigation
+
+<PageTitle>Home</PageTitle>
+
+@code {
+    protected override void OnInitialized()
+    {
+        // Redirect immediately to the semantic search page
+        Navigation.NavigateTo("/semantic-search", replace: true);
+    }
+}

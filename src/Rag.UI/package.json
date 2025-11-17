@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "tailwind-build": "npx tailwindcss -i wwwroot/css/input.css -o wwwroot/css/output.css",
+    "tailwind-build-and-minify": "npx tailwindcss -i wwwroot/css/input.css -o wwwroot/css/output.css --minify",
+    "tailwind-watch": "npx tailwindcss -i wwwroot/css/input.css -o wwwroot/css/output.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.17",
+    "tailwindcss": "^4.1.17"
+  },
+  "dependencies": {
+    "flowbite": "^4.0.1"
+  }
+}
