@@ -1,4 +1,4 @@
-﻿﻿namespace SharedKernel.Constants;
+﻿namespace SharedKernel.Constants;
 
 public static class OllamaModels
 {
@@ -7,4 +7,6 @@ public static class OllamaModels
     
     // Embedding dimensions for nomic-embed-text model
     public const int NomicEmbedTextDimensions = 768;
+    
+    public const string OllamaLocalEndpoint = "http://localhost:11434";
 }
