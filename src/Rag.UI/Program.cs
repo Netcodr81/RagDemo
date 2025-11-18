@@ -16,6 +16,7 @@ builder.Services.AddHttpClient(HttpClients.RagApiClient, client =>
 {
     // Use the API's HTTPS launch URL for local development (ensure the dev cert is trusted in the browser)
     client.BaseAddress = new Uri("https://localhost:7039/");
+    client.Timeout = TimeSpan.FromMinutes(5);
 });
 
 builder.Services.AddScoped<IFlowbiteService, FlowbiteService>();
