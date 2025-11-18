@@ -1,4 +1,5 @@
 using Carter;
+using Microsoft.Extensions.AI;
 using Microsoft.SemanticKernel;
 using Qdrant.Client;
 using Scalar.AspNetCore;
@@ -27,12 +28,17 @@ var ollamaUri = new Uri(builder.Configuration.GetValue<string>("OllamaUri"));
 builder.Services.AddOllamaChatCompletion(OllamaModels.Llama32_1b, ollamaUri);
 builder.Services.AddOllamaTextGeneration(OllamaModels.Llama32_1b, ollamaUri);
 builder.Services.AddOllamaEmbeddingGenerator(OllamaModels.NomicEmbedText, ollamaUri);
+builder.Services.AddOllamaChatClient(OllamaModels.Llama32_1b, ollamaUri);
 
 builder.Services.AddSingleton<QdrantClient>(options => new QdrantClient("localhost"));
 builder.Services.AddQdrantVectorStore("localhost");
-builder.Services.AddSingleton<DocumentVectorSearch>();
+builder.Services.AddSingleton<DocumentVectorSearchService>();
+builder.Services.AddSingleton<RagQuestionService>();
+builder.Services.AddSingleton<PromptService>();
 
-builder.Services.AddLogging();
+builder.Services.AddLogging(logging => logging.AddConsole().SetMinimumLevel(LogLevel.Information));
+
+builder.Services.AddTransient<ChatOptions>();
 
 builder.Services.AddCarter();
 

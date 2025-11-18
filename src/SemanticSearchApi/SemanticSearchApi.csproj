@@ -24,5 +24,9 @@
     <ItemGroup>
       <ProjectReference Include="..\SharedKernel\SharedKernel.csproj" />
     </ItemGroup>
+    
+    <ItemGroup>
+        <None Include="Prompts\*.txt" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
 
 </Project>

@@ -14,10 +14,10 @@ public class SemanticSearchEndpoint : ICarterModule
             [FromQuery] string query,
             [FromQuery] int? topK,
             [FromQuery] bool? includeEmbedding,
-            [FromServices] DocumentVectorSearch search
+            [FromServices] DocumentVectorSearchService searchService
         ) =>
         {
-            var results = await search.SearchAsync(query, topK ?? 5, includeEmbedding ?? false);
+            var results = await searchService.SearchAsync(query, topK ?? 5, includeEmbedding ?? false);
             return TypedResults.Ok(new SemanticSearchResponse
             {
                 Items = !results.Any()

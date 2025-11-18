@@ -21,7 +21,7 @@ public class DocumentVectorSearchResult
 /// <summary>
 /// Strongly typed search abstraction over Qdrant for DocumentVector records.
 /// </summary>
-public class DocumentVectorSearch(StringEmbeddingGenerator embeddingGenerator, QdrantClient qdrantClient)
+public class DocumentVectorSearchService(StringEmbeddingGenerator embeddingGenerator, QdrantClient qdrantClient)
 {
     /// <summary>
     /// Performs a semantic vector similarity search against the document collection.
