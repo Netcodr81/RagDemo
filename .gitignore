@@ -417,3 +417,6 @@ FodyWeavers.xsd
 *.msm
 *.msp
 /.idea/.idea.TextExtractor/.idea
+
+# Qdrant Vector Database files
+qdrant_data/
