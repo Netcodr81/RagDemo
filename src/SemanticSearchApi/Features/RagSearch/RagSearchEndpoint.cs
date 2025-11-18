@@ -9,7 +9,7 @@ public class RagSearchEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet("/ask", async Task<IResult> (
+        app.MapGet("/ask/simple-rag", async Task<IResult> (
             [FromQuery] string query,
             [FromServices] RagQuestionService questionService
         ) =>

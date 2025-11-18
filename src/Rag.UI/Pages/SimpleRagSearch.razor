@@ -1,0 +1,165 @@
+﻿@page "/simple-rag-search"
+@using System.ComponentModel.DataAnnotations
+@using Rag.UI.Models
+
+@inject IHttpClientFactory HttpClientFactory
+
+<PageTitle>Simple Rag Search</PageTitle>
+
+<div class="p-4 grid grid-cols-1 gap-6 max-w-5xl mx-auto">
+    <EditForm Model="@SearchModel" OnValidSubmit="SearchAsync">
+        <DataAnnotationsValidator />
+        <div class="flex flex-col gap-2">
+            <div class="flex flex-row gap-4 justify-center">
+                <div class="w-2/3 flex flex-col">
+                    <InputText class="rounded-md p-3 border border-slate-400 dark:bg-white dark:border-b-ocio-blue-400"
+                               @bind-Value="SearchModel.Query" @onkeydown="HandleKeyDown" placeholder="Ask a question"
+                               aria-label="Search" autofocus/>
+                </div>
+                <button type="submit" class="rounded-md bg-ocio-blue-500 hover:accent-ocio-blue-600 text-white p-3 cursor-pointer w-[100px]">
+                    Ask
+                </button>
+            </div>
+            <div>
+                <ValidationMessage For="@(() => SearchModel.Query)" class="text-red-600 text-lg mt-2 font-semibold pl-10" />
+            </div>
+        </div>
+    </EditForm>
+
+    @if (IsLoading)
+    {
+        <div class="mt-8 flex flex-col items-center gap-4" aria-live="polite">
+            <div role="status" class="flex items-center gap-4">
+                <svg aria-hidden="true" class="w-10 h-10 animate-spin text-gray-200 fill-ocio-blue-600 dark:text-gray-700 dark:fill-ocio-blue-500" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
+                    <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
+                </svg>
+                <span class="text-xl font-semibold text-ocio-blue-500 dark:text-blue-400">Generating an answer<span class="inline-block w-8 ml-2 text-ocio-blue-500 dark:text-blue-300">@_loadingDots</span></span>
+            </div>
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(Results))
+    {
+        <div class="relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:bg-gray-800 dark:border-gray-700">
+            <div class="p-6 flex flex-col gap-8">
+                <div class="flex flex-col gap-2">
+                    <div class="flex items-start gap-3">
+                        <div class="p-2 rounded-md bg-blue-100 text-ocio-blue-500 dark:bg-blue-900/40 dark:text-blue-200" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+                                <path d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm0 14v-1m0-2a2 2 0 1 0-2-2" />
+                            </svg>
+                        </div>
+                        <h5 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">Question</h5>
+                    </div>
+                    <div class="ml-1 pl-3 border-l-2 border-blue-300 dark:border-b-ocio-blue-500 text-gray-700 dark:text-gray-200 leading-relaxed">
+                        @SearchModel.Query
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <div class="flex items-start gap-3">
+                        <div class="p-2 rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+                                <path d="M12 20h9" />
+                                <path d="M12 14h6" />
+                                <path d="M12 8h3" />
+                                <path d="M3 20v-6a2 2 0 0 1 2-2h4" />
+                                <path d="M7 4h10a2 2 0 0 1 2 2v14" />
+                            </svg>
+                        </div>
+                        <h5 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">Answer</h5>
+                    </div>
+                    <div class="ml-1 pl-3 border-l-2 border-emerald-300 dark:border-emerald-600 bg-gray-50 dark:bg-gray-900/40 rounded-md p-4 text-gray-800 dark:text-gray-100 text-sm leading-relaxed whitespace-pre-line">
+                        @Results
+                    </div>
+                </div>
+            </div>
+
+            <div class="px-6 pb-4 flex justify-end gap-2 text-xs text-gray-500 dark:text-gray-400">
+                <span>Generated by LLM</span>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private SearchFormModel SearchModel { get; set; } = new();
+    private bool IsLoading { get; set; }
+    private string? Results { get; set; }
+    private HttpClient ApiClient => HttpClientFactory.CreateClient(HttpClients.RagApiClient);
+    private string _loadingDots = string.Empty;
+    private System.Timers.Timer? _loadingTimer;
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SearchAsync();
+        }
+    }
+
+    private void StartLoadingAnimation()
+    {
+        _loadingDots = string.Empty;
+        _loadingTimer?.Dispose();
+        _loadingTimer = new System.Timers.Timer(400);
+        _loadingTimer.Elapsed += (_, _) =>
+        {
+            // Cycle through "", ".", "..", "..."
+            _loadingDots = _loadingDots.Length >= 3 ? string.Empty : _loadingDots + ".";
+            InvokeAsync(StateHasChanged);
+        };
+        _loadingTimer.AutoReset = true;
+        _loadingTimer.Start();
+    }
+
+    private void StopLoadingAnimation()
+    {
+        if (_loadingTimer != null)
+        {
+            _loadingTimer.Stop();
+            _loadingTimer.Dispose();
+            _loadingTimer = null;
+        }
+        _loadingDots = string.Empty;
+    }
+
+    private async Task SearchAsync()
+    {
+        if (string.IsNullOrWhiteSpace(SearchModel.Query))
+        {
+            Results = null;
+            return;
+        }
+
+        IsLoading = true;
+        Results = null;
+        StartLoadingAnimation();
+        StateHasChanged();
+
+        try
+        {
+            // Build a relative URL (HttpClient has a BaseAddress configured). Escape the query string.
+            var url = $"ask/simple-rag?query={Uri.EscapeDataString(SearchModel.Query)}";
+       
+            Results = await ApiClient.GetFromJsonAsync<string>(url);
+        }
+        catch (Exception ex)
+        {
+            // Keep results null on error and optionally log the exception for debugging
+            Results = "Sorry I'm unable to answer your question at this time. Please try again later.";
+            Console.Error.WriteLine($"Semantic search request failed: {ex.Message}");
+        }
+        finally
+        {
+            IsLoading = false;
+            StopLoadingAnimation();
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose()
+    {
+        StopLoadingAnimation();
+    }
+}

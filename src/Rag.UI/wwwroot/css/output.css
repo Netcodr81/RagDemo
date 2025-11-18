@@ -870,6 +870,9 @@
   .mt-5 {
     margin-top: calc(var(--spacing) * 5);
   }
+  .mt-8 {
+    margin-top: calc(var(--spacing) * 8);
+  }
   .apexcharts-canvas {
     & .apexcharts-tooltip {
       background-color: primary !important;
@@ -1194,6 +1197,12 @@
       margin-left: -10px !important;
     }
   }
+  .ml-1 {
+    margin-left: calc(var(--spacing) * 1);
+  }
+  .ml-2 {
+    margin-left: calc(var(--spacing) * 2);
+  }
   .ml-3 {
     margin-left: calc(var(--spacing) * 3);
   }
@@ -1287,6 +1296,9 @@
   }
   .h-6 {
     height: calc(var(--spacing) * 6);
+  }
+  .h-10 {
+    height: calc(var(--spacing) * 10);
   }
   .h-\[calc\(100\%-1rem\)\] {
     height: calc(100% - 1rem);
@@ -1386,6 +1398,12 @@
   .w-6 {
     width: calc(var(--spacing) * 6);
   }
+  .w-8 {
+    width: calc(var(--spacing) * 8);
+  }
+  .w-10 {
+    width: calc(var(--spacing) * 10);
+  }
   .w-11 {
     width: calc(var(--spacing) * 11);
   }
@@ -1484,6 +1502,9 @@
   .transform-none {
     transform: none;
   }
+  .animate-spin {
+    animation: var(--animate-spin);
+  }
   .cursor-default {
     cursor: default;
   }
@@ -1550,6 +1571,9 @@
   .gap-6 {
     gap: calc(var(--spacing) * 6);
   }
+  .gap-8 {
+    gap: calc(var(--spacing) * 8);
+  }
   .space-y-2 {
     :where(& > :not(:last-child)) {
       --tw-space-y-reverse: 0;
@@ -1608,6 +1632,9 @@
   .rounded-md {
     border-radius: var(--radius-md);
   }
+  .rounded-xl {
+    border-radius: var(--radius-xl);
+  }
   .rounded-s-base {
     border-start-start-radius: var(--radius-base);
     border-end-start-radius: var(--radius-base);
@@ -1655,6 +1682,10 @@
   .border-b-0 {
     border-bottom-style: var(--tw-border-style);
     border-bottom-width: 0px;
+  }
+  .border-l-2 {
+    border-left-style: var(--tw-border-style);
+    border-left-width: 2px;
   }
   .dark {
     & .apexcharts-canvas .apexcharts-tooltip {
@@ -1704,11 +1735,17 @@
       stroke: var(--color-default) !important;
     }
   }
+  .border-blue-300 {
+    border-color: var(--color-blue-300);
+  }
   .border-brand {
     border-color: var(--color-brand);
   }
   .border-default-medium {
     border-color: var(--color-default-medium);
+  }
+  .border-emerald-300 {
+    border-color: var(--color-emerald-300);
   }
   .border-gray-200 {
     border-color: var(--color-gray-200);
@@ -1750,6 +1787,9 @@
       background-color: var(--color-neutral-secondary-medium);
     }
   }
+  .bg-blue-100 {
+    background-color: var(--color-blue-100);
+  }
   .bg-blue-700 {
     background-color: var(--color-blue-700);
   }
@@ -1761,6 +1801,9 @@
     @supports (color: color-mix(in lab, red, red)) {
       background-color: color-mix(in oklab, var(--color-dark-backdrop) 70%, transparent);
     }
+  }
+  .bg-emerald-100 {
+    background-color: var(--color-emerald-100);
   }
   .bg-gray-50 {
     background-color: var(--color-gray-50);
@@ -1779,9 +1822,6 @@
     @supports (color: color-mix(in lab, red, red)) {
       background-color: color-mix(in oklab, var(--color-gray-900) 50%, transparent);
     }
-  }
-  .bg-green-700 {
-    background-color: var(--color-green-700);
   }
   .bg-neutral-primary {
     background-color: var(--color-neutral-primary);
@@ -1864,6 +1904,12 @@
       fill: white !important;
     }
   }
+  .fill-blue-600 {
+    fill: var(--color-blue-600);
+  }
+  .fill-ocio-blue-600 {
+    fill: var(--color-ocio-blue-600);
+  }
   .apexcharts-ycrosshairs {
     stroke: var(--color-default) !important;
     .dark & {
@@ -1919,6 +1965,9 @@
   .px-5 {
     padding-inline: calc(var(--spacing) * 5);
   }
+  .px-6 {
+    padding-inline: calc(var(--spacing) * 6);
+  }
   .py-0\.5 {
     padding-block: calc(var(--spacing) * 0.5);
   }
@@ -1971,8 +2020,14 @@
       color: heading !important;
     }
   }
+  .pb-4 {
+    padding-bottom: calc(var(--spacing) * 4);
+  }
   .pb-20 {
     padding-bottom: calc(var(--spacing) * 20);
+  }
+  .pl-3 {
+    padding-left: calc(var(--spacing) * 3);
   }
   .pl-10 {
     padding-left: calc(var(--spacing) * 10);
@@ -2090,6 +2145,9 @@
   .whitespace-nowrap {
     white-space: nowrap;
   }
+  .whitespace-pre-line {
+    white-space: pre-line;
+  }
   .datatable-sorter {
     .datatable-wrapper .datatable-table thead th & {
       text-transform: uppercase;
@@ -2117,14 +2175,23 @@
   .text-blue-600 {
     color: var(--color-blue-600);
   }
+  .text-blue-700 {
+    color: var(--color-blue-700);
+  }
   .text-body {
     color: var(--color-body);
+  }
+  .text-emerald-700 {
+    color: var(--color-emerald-700);
   }
   .text-fg-brand {
     color: var(--color-fg-brand);
   }
   .text-fg-disabled {
     color: var(--color-fg-disabled);
+  }
+  .text-gray-200 {
+    color: var(--color-gray-200);
   }
   .text-gray-400 {
     color: var(--color-gray-400);
@@ -2135,11 +2202,17 @@
   .text-gray-700 {
     color: var(--color-gray-700);
   }
+  .text-gray-800 {
+    color: var(--color-gray-800);
+  }
   .text-gray-900 {
     color: var(--color-gray-900);
   }
   .text-heading {
     color: var(--color-heading);
+  }
+  .text-ocio-blue-500 {
+    color: var(--color-ocio-blue-500);
   }
   .text-ocio-blue-600 {
     color: var(--color-ocio-blue-600);
@@ -2203,6 +2276,10 @@
   .duration-75 {
     --tw-duration: 75ms;
     transition-duration: 75ms;
+  }
+  .ease-in-out {
+    --tw-ease: var(--ease-in-out);
+    transition-timing-function: var(--ease-in-out);
   }
   .ease-out {
     --tw-ease: var(--ease-out);
@@ -2534,6 +2611,16 @@
       }
     }
   }
+  .dark\:border-blue-600 {
+    &:where(.dark, .dark *) {
+      border-color: var(--color-blue-600);
+    }
+  }
+  .dark\:border-emerald-600 {
+    &:where(.dark, .dark *) {
+      border-color: var(--color-emerald-600);
+    }
+  }
   .dark\:border-gray-500 {
     &:where(.dark, .dark *) {
       border-color: var(--color-gray-500);
@@ -2554,9 +2641,30 @@
       border-bottom-color: var(--color-ocio-blue-400);
     }
   }
+  .dark\:border-b-ocio-blue-500 {
+    &:where(.dark, .dark *) {
+      border-bottom-color: var(--color-ocio-blue-500);
+    }
+  }
   .dark\:bg-blue-600 {
     &:where(.dark, .dark *) {
       background-color: var(--color-blue-600);
+    }
+  }
+  .dark\:bg-blue-900\/40 {
+    &:where(.dark, .dark *) {
+      background-color: color-mix(in srgb, oklch(37.9% 0.146 265.522) 40%, transparent);
+      @supports (color: color-mix(in lab, red, red)) {
+        background-color: color-mix(in oklab, var(--color-blue-900) 40%, transparent);
+      }
+    }
+  }
+  .dark\:bg-emerald-900\/40 {
+    &:where(.dark, .dark *) {
+      background-color: color-mix(in srgb, oklch(37.8% 0.077 168.94) 40%, transparent);
+      @supports (color: color-mix(in lab, red, red)) {
+        background-color: color-mix(in oklab, var(--color-emerald-900) 40%, transparent);
+      }
     }
   }
   .dark\:bg-gray-600 {
@@ -2587,6 +2695,14 @@
       background-color: var(--color-gray-900);
     }
   }
+  .dark\:bg-gray-900\/40 {
+    &:where(.dark, .dark *) {
+      background-color: color-mix(in srgb, oklch(21% 0.034 264.665) 40%, transparent);
+      @supports (color: color-mix(in lab, red, red)) {
+        background-color: color-mix(in oklab, var(--color-gray-900) 40%, transparent);
+      }
+    }
+  }
   .dark\:bg-gray-900\/80 {
     &:where(.dark, .dark *) {
       background-color: color-mix(in srgb, oklch(21% 0.034 264.665) 80%, transparent);
@@ -2605,9 +2721,49 @@
       background-color: var(--color-white);
     }
   }
+  .dark\:fill-blue-500 {
+    &:where(.dark, .dark *) {
+      fill: var(--color-blue-500);
+    }
+  }
+  .dark\:fill-ocio-blue-500 {
+    &:where(.dark, .dark *) {
+      fill: var(--color-ocio-blue-500);
+    }
+  }
+  .dark\:text-blue-200 {
+    &:where(.dark, .dark *) {
+      color: var(--color-blue-200);
+    }
+  }
+  .dark\:text-blue-300 {
+    &:where(.dark, .dark *) {
+      color: var(--color-blue-300);
+    }
+  }
+  .dark\:text-blue-400 {
+    &:where(.dark, .dark *) {
+      color: var(--color-blue-400);
+    }
+  }
   .dark\:text-blue-500 {
     &:where(.dark, .dark *) {
       color: var(--color-blue-500);
+    }
+  }
+  .dark\:text-emerald-200 {
+    &:where(.dark, .dark *) {
+      color: var(--color-emerald-200);
+    }
+  }
+  .dark\:text-gray-100 {
+    &:where(.dark, .dark *) {
+      color: var(--color-gray-100);
+    }
+  }
+  .dark\:text-gray-200 {
+    &:where(.dark, .dark *) {
+      color: var(--color-gray-200);
     }
   }
   .dark\:text-gray-300 {
@@ -2618,6 +2774,11 @@
   .dark\:text-gray-400 {
     &:where(.dark, .dark *) {
       color: var(--color-gray-400);
+    }
+  }
+  .dark\:text-gray-700 {
+    &:where(.dark, .dark *) {
+      color: var(--color-gray-700);
     }
   }
   .dark\:text-ocio-blue-300 {
