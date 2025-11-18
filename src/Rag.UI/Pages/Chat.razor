@@ -1,0 +1,207 @@
+﻿@page "/chat"
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.Extensions.AI
+
+
+@inject IHttpClientFactory HttpClientFactory
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Chat</PageTitle>
+
+<div class="flex flex-col h-screen max-w-5xl mx-auto p-4 gap-4">
+    <!-- Chat Messages Container -->
+    <div class="flex-1 overflow-hidden rounded-3xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900 shadow-sm">
+        <div @ref="_messagesContainer" class="h-full overflow-y-auto p-6 space-y-4 scroll-smooth">
+            @if (Messages.Count == 0)
+            {
+                <div class="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
+                    <div class="text-center">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                        <p class="mt-2 text-sm">Start a conversation with the librarian</p>
+                    </div>
+                </div>
+            }
+            else
+            {
+                @foreach (var message in Messages)
+                {
+                    <div class="@GetMessageContainerClass(message.Role)" @key="@message.MessageId">
+                        <!-- Avatar -->
+                        <div class="flex-shrink-0">
+                            <div class="@GetAvatarClass(message.Role)">
+                                @GetAvatarInitials(message.Role)
+                            </div>
+                        </div>
+                        
+                        <!-- Message Content -->
+                        <div class="@GetMessageBubbleClass(message.Role)">
+                            <div class="whitespace-pre-line">@message.Text</div>
+                        </div>
+                    </div>
+                }
+            }
+            
+            @if (IsLoading)
+            {
+                <div class="flex items-end gap-3 justify-start">
+                    <div class="flex-shrink-0">
+                        <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-semibold">
+                            AI
+                        </div>
+                    </div>
+                    <div class="rounded-2xl border border-gray-200 bg-white px-4 py-3 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                        <div class="flex items-center gap-1">
+                            <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+                            <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+                            <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="flex-none">
+        <EditForm Model="@InputModel" OnValidSubmit="HandleSubmitAsync" class="relative">
+            <DataAnnotationsValidator />
+            <div class="flex gap-3 items-end">
+                <div class="flex-1 relative">
+                    <InputTextArea 
+                        @bind-Value="InputModel.Message" 
+                        @onkeydown="HandleKeyDown"
+                        placeholder="Ask the librarian a question..."
+                        class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 pr-12 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-white min-h-[56px] max-h-[200px]"
+                        rows="1" />
+                    <ValidationMessage For="@(() => InputModel.Message)" class="text-red-600 text-sm mt-1" />
+                </div>
+                <button 
+                    type="submit" 
+                    disabled="@(IsLoading || string.IsNullOrWhiteSpace(InputModel.Message))"
+                    class="flex-shrink-0 h-[56px] w-[56px] rounded-xl bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white flex items-center justify-center transition-colors shadow-md">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                    </svg>
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private sealed class ChatInputModel
+    {
+        [Required(ErrorMessage = "Please enter a message")]
+        public string Message { get; set; } = string.Empty;
+    }
+
+    private List<ChatMessage> Messages { get; set; } = new();
+    private ChatInputModel InputModel { get; set; } = new();
+    private bool IsLoading { get; set; }
+    private ElementReference _messagesContainer;
+    
+    private HttpClient ApiClient => HttpClientFactory.CreateClient(HttpClients.RagApiClient);
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender && Messages.Count > 0)
+        {
+            await ScrollToBottom();
+        }
+    }
+
+    private async Task ScrollToBottom()
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("eval", 
+                $"document.querySelector('[data-messages-container]')?.scrollTo({{ top: document.querySelector('[data-messages-container]').scrollHeight, behavior: 'smooth' }})");
+        }
+        catch
+        {
+            // Ignore JS errors
+        }
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !e.ShiftKey)
+        {
+            await HandleSubmitAsync();
+        }
+    }
+
+    private async Task HandleSubmitAsync()
+    {
+        if (string.IsNullOrWhiteSpace(InputModel.Message))
+            return;
+
+        var userMessage = new ChatMessage(ChatRole.User, InputModel.Message);
+        Messages.Add(userMessage);
+        
+        InputModel.Message = string.Empty;
+        IsLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            var url = "chat";
+            var response = await ApiClient.PostAsJsonAsync(url, Messages);
+            
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorBody = await response.Content.ReadAsStringAsync();
+                Messages.Add(new ChatMessage(
+                    ChatRole.System, 
+                    $"Error: {(int)response.StatusCode} {response.ReasonPhrase}\n{errorBody}"));
+                return;
+            }
+
+            var assistantText = await response.Content.ReadFromJsonAsync<string>() ?? "(empty response)";
+            Messages.Add(new ChatMessage(ChatRole.Assistant, assistantText));
+        }
+        catch (Exception ex)
+        {
+            Messages.Add(new ChatMessage(ChatRole.System, $"Unexpected error: {ex.Message}"));
+        }
+        finally
+        {
+            IsLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private string GetMessageContainerClass(ChatRole role)
+    {
+        if (role == ChatRole.User) return "flex items-end gap-3 justify-end";
+        if (role == ChatRole.Assistant) return "flex items-end gap-3 justify-start";
+        if (role == ChatRole.System) return "flex items-center gap-3 justify-center";
+        return "flex items-end gap-3 justify-start";
+    }
+
+    private string GetAvatarClass(ChatRole role)
+    {
+        if (role == ChatRole.User) return "h-8 w-8 rounded-full bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center text-white text-xs font-semibold";
+        if (role == ChatRole.Assistant) return "h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-semibold";
+        if (role == ChatRole.System) return "h-8 w-8 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white text-xs font-semibold";
+        return "h-8 w-8 rounded-full bg-gray-400 flex items-center justify-center text-white text-xs font-semibold";
+    }
+
+    private string GetMessageBubbleClass(ChatRole role)
+    {
+        if (role == ChatRole.User) return "rounded-2xl bg-blue-600 px-4 py-3 text-white shadow-md max-w-[70%] text-sm leading-relaxed";
+        if (role == ChatRole.Assistant) return "rounded-2xl border border-gray-200 bg-white px-4 py-3 text-gray-900 shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 max-w-[70%] text-sm leading-relaxed";
+        if (role == ChatRole.System) return "rounded-2xl bg-amber-100 px-4 py-3 text-amber-900 shadow-sm dark:bg-amber-900/40 dark:text-amber-100 max-w-[70%] text-sm leading-relaxed";
+        return "rounded-2xl border border-gray-200 bg-white px-4 py-3 text-gray-900 shadow-sm max-w-[70%] text-sm leading-relaxed";
+    }
+
+    private string GetAvatarInitials(ChatRole role)
+    {
+        if (role == ChatRole.User) return "You";
+        if (role == ChatRole.Assistant) return "AI";
+        if (role == ChatRole.System) return "SYS";
+        return "?";
+    }
+}
