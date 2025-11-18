@@ -34,6 +34,7 @@ builder.Services.AddSingleton<QdrantClient>(options => new QdrantClient("localho
 builder.Services.AddQdrantVectorStore("localhost");
 builder.Services.AddSingleton<DocumentVectorSearchService>();
 builder.Services.AddSingleton<RagQuestionService>();
+builder.Services.AddSingleton<DocumentVectorSearchWithHydeService>();
 builder.Services.AddSingleton<PromptService>();
 
 builder.Services.AddLogging(logging => logging.AddConsole().SetMinimumLevel(LogLevel.Information));
