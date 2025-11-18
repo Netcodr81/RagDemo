@@ -39,6 +39,26 @@
             </div>
         </div>
     }
+    else if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="rounded-xl border border-red-300 bg-red-50 dark:bg-red-900/30 dark:border-red-700 shadow-sm">
+            <div class="p-5 flex flex-col gap-3">
+                <div class="flex items-start gap-3">
+                    <div class="p-2 rounded-md bg-red-200 text-red-800 dark:bg-red-800 dark:text-red-200" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h5 class="text-lg font-semibold text-red-800 dark:text-red-200">Request Error</h5>
+                </div>
+                <div class="ml-1 pl-3 border-l-2 border-red-300 dark:border-red-600 text-red-700 dark:text-red-200 whitespace-pre-line text-sm leading-relaxed">@ErrorMessage</div>
+                <div class="flex gap-3 pt-2">
+                    <button class="px-4 py-2 rounded-md bg-red-600 hover:bg-red-700 text-white text-sm font-medium" @onclick="RetryAsync">Try Again</button>
+                    <button class="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 text-sm font-medium" @onclick="ClearError">Dismiss</button>
+                </div>
+            </div>
+        </div>
+    }
     else if (!string.IsNullOrEmpty(Results))
     {
         <div class="relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:bg-gray-800 dark:border-gray-700">
@@ -87,9 +107,11 @@
     private SearchFormModel SearchModel { get; set; } = new();
     private bool IsLoading { get; set; }
     private string? Results { get; set; }
+    private string? ErrorMessage { get; set; }
     private HttpClient ApiClient => HttpClientFactory.CreateClient(HttpClients.RagApiClient);
     private string _loadingDots = string.Empty;
     private System.Timers.Timer? _loadingTimer;
+    private CancellationTokenSource? _cts;
 
     private async Task HandleKeyDown(KeyboardEventArgs e)
     {
@@ -125,31 +147,106 @@
         _loadingDots = string.Empty;
     }
 
+    private void ClearError()
+    {
+        ErrorMessage = null;
+        StateHasChanged();
+    }
+
+    private async Task RetryAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(SearchModel.Query))
+        {
+            await SearchAsync();
+        }
+    }
+
     private async Task SearchAsync()
     {
+        // Guard against invalid query
         if (string.IsNullOrWhiteSpace(SearchModel.Query))
         {
             Results = null;
+            ErrorMessage = "Please enter a search query."; // fallback if validation didn't catch
             return;
         }
 
+        // Cancel any in-flight request
+        _cts?.Cancel();
+        _cts?.Dispose();
+        _cts = new CancellationTokenSource();
+        var token = _cts.Token;
+
         IsLoading = true;
         Results = null;
+        ErrorMessage = null;
         StartLoadingAnimation();
         StateHasChanged();
 
         try
         {
-            // Build a relative URL (HttpClient has a BaseAddress configured). Escape the query string.
             var url = $"ask/simple-rag?query={Uri.EscapeDataString(SearchModel.Query)}";
-       
-            Results = await ApiClient.GetFromJsonAsync<string>(url);
+            using var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Accept.Clear();
+            request.Headers.Accept.ParseAdd("application/json");
+
+            var response = await ApiClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                // Attempt to read body snippet for diagnostics
+                string bodySnippet = string.Empty;
+                try
+                {
+                    var raw = await response.Content.ReadAsStringAsync(token);
+                    if (!string.IsNullOrWhiteSpace(raw))
+                    {
+                        bodySnippet = raw.Length > 500 ? raw.Substring(0, 500) + "…" : raw;
+                    }
+                }
+                catch { /* ignore secondary errors */ }
+
+                ErrorMessage = $"HTTP {(int)response.StatusCode} {response.ReasonPhrase}\n{bodySnippet}".Trim();
+                return;
+            }
+
+            string? answer = null;
+            try
+            {
+                // Try to parse JSON string response
+                answer = await response.Content.ReadFromJsonAsync<string>(cancellationToken: token);
+            }
+            catch (Exception jsonEx)
+            {
+                // Fallback to raw text if JSON parse fails
+                Console.Error.WriteLine($"JSON parse failed: {jsonEx.Message}");
+                answer = await response.Content.ReadAsStringAsync(token);
+            }
+
+            if (string.IsNullOrWhiteSpace(answer))
+            {
+                ErrorMessage = "The server returned an empty response.";
+                return;
+            }
+
+            Results = answer.Trim();
+        }
+        catch (TaskCanceledException)
+        {
+            // Distinguish between user-initiated cancellation vs timeout
+            if (!token.IsCancellationRequested)
+            {
+                ErrorMessage = "The request timed out.";
+            }
+        }
+        catch (HttpRequestException httpEx)
+        {
+            ErrorMessage = $"Network error: {httpEx.Message}";
         }
         catch (Exception ex)
         {
-            // Keep results null on error and optionally log the exception for debugging
-            Results = "Sorry I'm unable to answer your question at this time. Please try again later.";
-            Console.Error.WriteLine($"Semantic search request failed: {ex.Message}");
+            ErrorMessage = $"Unexpected error: {ex.Message}";
+            Console.Error.WriteLine($"SearchAsync unexpected error: {ex}");
         }
         finally
         {
@@ -162,5 +259,7 @@
     public void Dispose()
     {
         StopLoadingAnimation();
+        _cts?.Cancel();
+        _cts?.Dispose();
     }
 }

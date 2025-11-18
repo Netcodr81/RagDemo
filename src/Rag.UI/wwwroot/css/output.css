@@ -1750,6 +1750,9 @@
   .border-gray-200 {
     border-color: var(--color-gray-200);
   }
+  .border-red-300 {
+    border-color: var(--color-red-300);
+  }
   .border-slate-400 {
     border-color: var(--color-slate-400);
   }
@@ -1840,6 +1843,15 @@
   }
   .bg-ocio-blue-500 {
     background-color: var(--color-ocio-blue-500);
+  }
+  .bg-red-50 {
+    background-color: var(--color-red-50);
+  }
+  .bg-red-200 {
+    background-color: var(--color-red-200);
+  }
+  .bg-red-600 {
+    background-color: var(--color-red-600);
   }
   .bg-red-700 {
     background-color: var(--color-red-700);
@@ -2223,6 +2235,12 @@
   .text-red-600 {
     color: var(--color-red-600);
   }
+  .text-red-700 {
+    color: var(--color-red-700);
+  }
+  .text-red-800 {
+    color: var(--color-red-800);
+  }
   .text-white {
     color: var(--color-white);
   }
@@ -2439,6 +2457,13 @@
       }
     }
   }
+  .hover\:bg-gray-300 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-gray-300);
+      }
+    }
+  }
   .hover\:bg-gray-400 {
     &:hover {
       @media (hover: hover) {
@@ -2450,6 +2475,13 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-neutral-tertiary-medium);
+      }
+    }
+  }
+  .hover\:bg-red-700 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-red-700);
       }
     }
   }
@@ -2636,6 +2668,16 @@
       border-color: var(--color-gray-700);
     }
   }
+  .dark\:border-red-600 {
+    &:where(.dark, .dark *) {
+      border-color: var(--color-red-600);
+    }
+  }
+  .dark\:border-red-700 {
+    &:where(.dark, .dark *) {
+      border-color: var(--color-red-700);
+    }
+  }
   .dark\:border-b-ocio-blue-400 {
     &:where(.dark, .dark *) {
       border-bottom-color: var(--color-ocio-blue-400);
@@ -2716,6 +2758,19 @@
       background-color: var(--color-ocio-blue-900);
     }
   }
+  .dark\:bg-red-800 {
+    &:where(.dark, .dark *) {
+      background-color: var(--color-red-800);
+    }
+  }
+  .dark\:bg-red-900\/30 {
+    &:where(.dark, .dark *) {
+      background-color: color-mix(in srgb, oklch(39.6% 0.141 25.723) 30%, transparent);
+      @supports (color: color-mix(in lab, red, red)) {
+        background-color: color-mix(in oklab, var(--color-red-900) 30%, transparent);
+      }
+    }
+  }
   .dark\:bg-white {
     &:where(.dark, .dark *) {
       background-color: var(--color-white);
@@ -2789,6 +2844,11 @@
   .dark\:text-ocio-blue-400 {
     &:where(.dark, .dark *) {
       color: var(--color-ocio-blue-400);
+    }
+  }
+  .dark\:text-red-200 {
+    &:where(.dark, .dark *) {
+      color: var(--color-red-200);
     }
   }
   .dark\:text-white {
