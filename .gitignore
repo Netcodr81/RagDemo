@@ -420,3 +420,5 @@ FodyWeavers.xsd
 
 # Qdrant Vector Database files
 qdrant_data/
+
+.idea/
