@@ -1,6 +1,7 @@
 ﻿@page "/chat"
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.Extensions.AI
+@rendermode InteractiveServer
 
 
 @inject IHttpClientFactory HttpClientFactory
@@ -8,7 +9,7 @@
 
 <PageTitle>Chat</PageTitle>
 
-<div class="flex flex-col h-screen max-w-5xl mx-auto p-4 gap-4">
+<div class="flex flex-col h-[750px] max-w-5xl mx-auto p-4 gap-4">
     <!-- Chat Messages Container -->
     <div class="flex-1 overflow-hidden rounded-3xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900 shadow-sm">
         <div @ref="_messagesContainer" class="h-full overflow-y-auto p-6 space-y-4 scroll-smooth" data-messages-container>
@@ -67,14 +68,15 @@
     <div class="flex-none">
         <EditForm Model="@InputModel" OnValidSubmit="HandleSubmitAsync" class="relative">
             <DataAnnotationsValidator />
-            <div class="flex gap-3 items-end">
+            <div class="flex gap-3">
                 <div class="flex-1 relative">
-                    <InputTextArea 
-                        @bind-Value="InputModel.Message" 
+                    <textarea 
+                        @bind-value="@InputModel.Message" 
+                        @bind-value:event="oninput"
                         @onkeydown="HandleKeyDown"
                         placeholder="Ask the librarian a question..."
-                        class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 pr-12 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-white min-h-[56px] max-h-[200px]"
-                        rows="1" />
+                        class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 pr-12 resize-none focus:outline-none focus:ring-2 focus:ring-ocio-blue-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-white min-h-[56px] max-h-[200px]"
+                        rows="1" ></textarea>
                     <ValidationMessage For="@(() => InputModel.Message)" class="text-red-600 text-sm mt-1" />
                 </div>
                 <button 

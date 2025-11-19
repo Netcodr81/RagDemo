@@ -1307,6 +1307,9 @@
   .h-2 {
     height: calc(var(--spacing) * 2);
   }
+  .h-2\/3 {
+    height: calc(2/3 * 100%);
+  }
   .h-3 {
     height: calc(var(--spacing) * 3);
   }
@@ -1330,6 +1333,18 @@
   }
   .h-\[56px\] {
     height: 56px;
+  }
+  .h-\[80\%\] {
+    height: 80%;
+  }
+  .h-\[600px\] {
+    height: 600px;
+  }
+  .h-\[750px\] {
+    height: 750px;
+  }
+  .h-\[800px\] {
+    height: 800px;
   }
   .h-\[calc\(100\%-1rem\)\] {
     height: calc(100% - 1rem);
@@ -2626,6 +2641,11 @@
   .focus\:ring-neutral-tertiary {
     &:focus {
       --tw-ring-color: var(--color-neutral-tertiary);
+    }
+  }
+  .focus\:ring-ocio-blue-500 {
+    &:focus {
+      --tw-ring-color: var(--color-ocio-blue-500);
     }
   }
   .focus\:outline-none {
