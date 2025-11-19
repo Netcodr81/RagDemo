@@ -1,0 +1,7 @@
+﻿<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Multi-Project" type="CompoundRunConfigurationType">
+    <toRun name="Rag.UI - https" type="LaunchSettings" />
+    <toRun name="SemanticSearchApi: https" type="LaunchSettings" />
+    <method v="2" />
+  </configuration>
+</component>
