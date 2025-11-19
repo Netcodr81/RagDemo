@@ -60,16 +60,14 @@ Ollama Docs: https://ollama.com/library
 
 ## 3. Build Vector Store (Initial Indexing)
 Run the vector base initializer to:
-- Verify Ollama is running and models are available.
-- Create the Qdrant collection if missing.
-- Embed each Markdown file in `src/Rag.VectorBaseInitializer/Markdown`.
+- Verify Ollama is running and the vector store is available by running `docker-compose up -d`
 
 From repository root:
 ```powershell
 cd .\src\Rag.VectorBaseInitializer
 dotnet run
 ```
-You should see logs indicating each document embedding insertion.
+You should see logs indicating each document embedding insertion. Once the process completes, the Qdrant collection `document_collection` will be populated. You can view this at http://localhost:6333/dashboard#/collections.
 
 ## 4. Run the Semantic Search API
 Configure `appsettings.Development.json` or `appsettings.json` with:
