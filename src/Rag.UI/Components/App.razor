@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>RAG Demo</title>
+    <base href="/"/>
+    <ResourcePreloader/>
+    <!-- Early theme application to avoid flash of light mode on navigation -->
+    <script>
+        (function() {
+            try {
+                var stored = localStorage.getItem('color-theme');
+                var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (stored === 'dark' || (!stored && prefersDark)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            } catch (e) { /* silent */ }
+        })();
+    </script>
+    <!-- Load theme toggler early so component JS calls succeed -->
+    <script src="js/theme-toggler.js"></script>
+    <link rel="stylesheet" href="@Assets["css/app.css"]"/>
+    <link rel="stylesheet" href="@Assets["Rag.UI.styles.css"]"/>
+    <link rel="stylesheet" href="css/output.css"/>
+    <ImportMap/>
+    <HeadOutlet/>
+</head>
+
+<body>
+<Routes/>
+<ReconnectModal/>
+<script src="@Assets["_framework/blazor.web.js"]"></script>
+<!-- Prefer locally hosted Flowbite; fallback to CDN if you add local file at wwwroot/lib/flowbite/flowbite.min.js -->
+<script src="https://cdn.jsdelivr.net/npm/flowbite@4.0.1/dist/flowbite.min.js"></script>
+<script src="js/flowbite-interop.js"></script>
+<script>
+    // After all scripts loaded, reapply saved theme and attach observer
+    window.themeToggler && window.themeToggler.applySavedTheme();
+    window.themeToggler && window.themeToggler.ensureObserver();
+    document.addEventListener('click', function(e){
+        if (e.target && e.target.closest('a') && e.target.closest('a').hasAttribute('href')) {
+            setTimeout(function(){
+                window.themeToggler && window.themeToggler.applySavedTheme();
+            }, 0);
+        }
+    });
+    window.addEventListener('blazor:afterRender', function(){
+        window.themeToggler && window.themeToggler.applySavedTheme();
+    });
+</script>
+</body>
+
+</html>

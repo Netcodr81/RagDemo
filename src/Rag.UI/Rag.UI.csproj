@@ -1,16 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>      
+        <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Markdig" Version="0.43.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.0"/>
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.0" PrivateAssets="all"/>
         <PackageReference Include="Microsoft.Extensions.AI" Version="10.0.0" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.0" />
     </ItemGroup>
@@ -18,137 +15,4 @@
     <ItemGroup>
       <ProjectReference Include="..\SharedKernel\SharedKernel.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="Icons\AppleIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\ArrowDownIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\ArrowLeftIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\ArrowRightIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\ArrowRightToBracketIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\ArrowUpIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\ArrowUpRightFromSquareIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\AwsIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\BarsIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\BellIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\BlueskyIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\CalendarMonthIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\ChartIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\CheckCircleIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\CheckIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\ChevronDownIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\ChevronLeftIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\ChevronRightIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\ChevronUpIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\ClipboardArrowIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\ClockIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\CloseCircleIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\CloseCircleSolidIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\CloseIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\CodeBranchIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\CompressIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\DatabaseIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\DiscordIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\DotsHorizontalIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\DotsVerticalIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\DownloadIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\EditIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\EnvelopeIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\ExclamationSolidIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\ExclamationTriangleIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\ExpandIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\EyeIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\EyeSlashIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\FacebookIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\FileCopyIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\FileExportIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\FileIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\FileImportIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\FilterIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\FloppyDiskAltIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\FloppyDiskIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\FolderIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\ForwardIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\GearIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\GithubIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\GitlabIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\GoogleIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\GridIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\HamburgerIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\HeartIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\HomeIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\ImageIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\InfoCircleIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\InfoIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\InstagramIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\LinkedinIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\ListIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\LockIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\LockOpenIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\MapPinIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\MessagesIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\PaperClipIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\PencilIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\PhoneIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\PlayIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\PlusIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\PrinterIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\QuestionCircleIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\RedditIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\RefreshIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\RocketIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\SearchIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\ShareNodesIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\SortIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\StarIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\StopIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\TableRowIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\TrashBinIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\TwitterIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\UndoIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\UploadIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\UserCircleIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\UserIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\UsersIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\UserSolidIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\WhatsappIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\WindowsIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\XIcon.razor" />
-      <_ContentIncludedByDefault Remove="Icons\YoutubeIcon.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\ChatAction.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\ChatActions.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\ChatMessage.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\ChatMessageContent.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\ChatResponse.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\ChatSource.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\Conversation.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\ConversationContent.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\ConversationScrollButton.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\Loader.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\PromptInput.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\PromptInputActionAddAttachments.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\PromptInputActionMenu.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\PromptInputActionMenuContent.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\PromptInputActionMenuTrigger.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\PromptInputAttachment.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\PromptInputAttachments.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\PromptInputBody.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\PromptInputButton.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\PromptInputFooter.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\PromptInputHeader.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\PromptInputModelSelect.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\PromptInputModelSelectContent.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\PromptInputModelSelectItem.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\PromptInputModelSelectTrigger.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\PromptInputModelSelectValue.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\PromptInputSubmit.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\PromptInputTextarea.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\PromptInputTools.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\Reasoning.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\ReasoningContent.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\ReasoningTrigger.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\Sources.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\SourcesContent.razor" />
-      <_ContentIncludedByDefault Remove="Flowbite\Components\Chat\SourcesTrigger.razor" />
-    </ItemGroup>
-
 </Project>

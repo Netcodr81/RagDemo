@@ -1,11 +1,10 @@
-﻿@page "/rag-search-with-hyde"
-@using System.ComponentModel.DataAnnotations
+﻿@page "/simple-rag-search"
 @using Rag.UI.Models
 @using SharedKernel.Constants
 
 @inject IHttpClientFactory HttpClientFactory
 
-<PageTitle>RAG Search (HyDE)</PageTitle>
+<PageTitle>Simple Rag Search</PageTitle>
 
 <div class="p-4 grid grid-cols-1 gap-6 max-w-5xl mx-auto">
     <EditForm Model="@SearchModel" OnValidSubmit="SearchAsync">
@@ -15,7 +14,7 @@
                 <div class="w-2/3 flex flex-col">
                     <InputText class="rounded-md p-3 border border-slate-400 dark:bg-white dark:border-b-ocio-blue-400"
                                @bind-Value="SearchModel.Query" @onkeydown="HandleKeyDown" placeholder="Ask a question"
-                               aria-label="Ask a question" autofocus />
+                               aria-label="Search" autofocus/>
                 </div>
                 <button type="submit" class="rounded-md bg-ocio-blue-500 hover:accent-ocio-blue-600 text-white p-3 cursor-pointer w-[100px]">
                     Ask
@@ -128,6 +127,7 @@
         _loadingTimer = new System.Timers.Timer(400);
         _loadingTimer.Elapsed += (_, _) =>
         {
+            // Cycle through "", ".", "..", "..."
             _loadingDots = _loadingDots.Length >= 3 ? string.Empty : _loadingDots + ".";
             InvokeAsync(StateHasChanged);
         };
@@ -162,13 +162,15 @@
 
     private async Task SearchAsync()
     {
+        // Guard against invalid query
         if (string.IsNullOrWhiteSpace(SearchModel.Query))
         {
             Results = null;
-            ErrorMessage = "Please enter a search query.";
+            ErrorMessage = "Please enter a search query."; // fallback if validation didn't catch
             return;
         }
 
+        // Cancel any in-flight request
         _cts?.Cancel();
         _cts?.Dispose();
         _cts = new CancellationTokenSource();
@@ -182,7 +184,7 @@
 
         try
         {
-            var url = $"ask/rag-with-hyde?query={Uri.EscapeDataString(SearchModel.Query)}";
+            var url = $"ask/simple-rag?query={Uri.EscapeDataString(SearchModel.Query)}";
             using var request = new HttpRequestMessage(HttpMethod.Get, url);
             request.Headers.Accept.Clear();
             request.Headers.Accept.ParseAdd("application/json");
@@ -191,6 +193,7 @@
 
             if (!response.IsSuccessStatusCode)
             {
+                // Attempt to read body snippet for diagnostics
                 string bodySnippet = string.Empty;
                 try
                 {
@@ -200,7 +203,7 @@
                         bodySnippet = raw.Length > 500 ? raw.Substring(0, 500) + "…" : raw;
                     }
                 }
-                catch { }
+                catch { /* ignore secondary errors */ }
 
                 ErrorMessage = $"HTTP {(int)response.StatusCode} {response.ReasonPhrase}\n{bodySnippet}".Trim();
                 return;
@@ -209,10 +212,12 @@
             string? answer = null;
             try
             {
+                // Try to parse JSON string response
                 answer = await response.Content.ReadFromJsonAsync<string>(cancellationToken: token);
             }
             catch (Exception jsonEx)
             {
+                // Fallback to raw text if JSON parse fails
                 Console.Error.WriteLine($"JSON parse failed: {jsonEx.Message}");
                 answer = await response.Content.ReadAsStringAsync(token);
             }
@@ -227,6 +232,7 @@
         }
         catch (TaskCanceledException)
         {
+            // Distinguish between user-initiated cancellation vs timeout
             if (!token.IsCancellationRequested)
             {
                 ErrorMessage = "The request timed out.";
@@ -239,7 +245,7 @@
         catch (Exception ex)
         {
             ErrorMessage = $"Unexpected error: {ex.Message}";
-            Console.Error.WriteLine($"HyDE search unexpected error: {ex}");
+            Console.Error.WriteLine($"SearchAsync unexpected error: {ex}");
         }
         finally
         {

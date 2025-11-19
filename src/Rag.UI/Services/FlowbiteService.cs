@@ -19,5 +19,7 @@ public class FlowbiteService : IFlowbiteService
     public async ValueTask InitializeFlowbiteAsync()
     {
         await _jsRuntime.InvokeVoidAsync("flowbiteInterop.initializeFlowbite");
+        // Reapply theme after Flowbite init (defensive)
+        await _jsRuntime.InvokeVoidAsync("themeToggler.applySavedTheme");
     }
 }

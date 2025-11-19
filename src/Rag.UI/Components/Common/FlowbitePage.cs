@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Rag.UI.Services;
 
-namespace Rag.UI.Pages.Common;
+namespace Rag.UI.Components.Common;
 
 public abstract class FlowbitePage : ComponentBase
 {

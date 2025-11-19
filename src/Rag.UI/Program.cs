@@ -1,16 +1,12 @@
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Rag.UI;
 using Rag.UI.Services;
+using Rag.UI.Components;
 
-var builder = WebAssemblyHostBuilder.CreateDefault(args);
-builder.RootComponents.Add<App>("#app");
-builder.RootComponents.Add<HeadOutlet>("head::after");
+var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddHttpClient(HttpClients.RagUiClient, client =>
-{
-    client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
-});
+// Add services to the container.
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
 
 builder.Services.AddHttpClient(HttpClients.RagApiClient, client =>
 {
@@ -21,4 +17,23 @@ builder.Services.AddHttpClient(HttpClients.RagApiClient, client =>
 
 builder.Services.AddScoped<IFlowbiteService, FlowbiteService>();
 
-await builder.Build().RunAsync();
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
+
+app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+app.UseHttpsRedirection();
+
+app.UseAntiforgery();
+
+app.MapStaticAssets();
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
+
+app.Run();
