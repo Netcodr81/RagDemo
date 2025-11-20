@@ -71,4 +71,7 @@ public class DocumentVectorSearchService(StringEmbeddingGenerator embeddingGener
 
         return mapped;
     }
+    
+    public async Task<IReadOnlyList<DocumentVectorSearchResult>> FindInDatabase(string query) => await SearchAsync(query, 10);
+    
 }

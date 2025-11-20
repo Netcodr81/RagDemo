@@ -3,6 +3,7 @@ using Microsoft.Extensions.AI;
 using Microsoft.SemanticKernel;
 using Qdrant.Client;
 using Scalar.AspNetCore;
+using SemanticSearchApi.Registries;
 using SemanticSearchApi.Services;
 using SharedKernel.Constants;
 
@@ -39,7 +40,10 @@ builder.Services.AddSingleton<PromptService>();
 
 builder.Services.AddLogging(logging => logging.AddConsole().SetMinimumLevel(LogLevel.Information));
 
-builder.Services.AddTransient<ChatOptions>();
+builder.Services.AddTransient<ChatOptions>(options => new ChatOptions
+{
+    Tools = FunctionRegistry.GetTools(options).ToList()
+});
 
 builder.Services.AddCarter();
 
