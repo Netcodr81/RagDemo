@@ -48,7 +48,7 @@
             {
                 <div class="flex items-end gap-3 justify-start">
                     <div class="flex-shrink-0">
-                        <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-semibold">
+                        <div class="h-8 w-8 rounded-md bg-gradient-to-br from-ocio-blue-600 to-ocio-blue-400 flex items-center justify-center text-white text-xs font-semibold">
                             AI
                         </div>
                     </div>
@@ -77,15 +77,22 @@
                         placeholder="Ask the librarian a question..."
                         class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 pr-12 resize-none focus:outline-none focus:ring-2 focus:ring-ocio-blue-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-white min-h-[56px] max-h-[200px]"
                         rows="1" ></textarea>
-                    <ValidationMessage For="@(() => InputModel.Message)" class="text-red-600 text-sm mt-1" />
                 </div>
                 <button 
                     type="submit" 
                     disabled="@(IsLoading || string.IsNullOrWhiteSpace(InputModel.Message))"
-                    class="flex-shrink-0 h-[56px] w-[56px] rounded-xl bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white flex items-center justify-center transition-colors shadow-md">
+                    class="flex-shrink-0 h-[56px] w-[56px] rounded-xl bg-ocio-blue-600 hover:bg-ocio-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white flex items-center justify-center transition-colors shadow-md">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                     </svg>
+                </button>
+                <button 
+                    class="bg-red-600 cursor-pointer text-white flex-shrink-0 h-[56px] w-[56px] rounded-xl disabled:bg-red-200 disabled:cursor-not-allowed flex items-center justify-center transition-colors shadow-md"
+                    disabled="@(Messages.Count == 0)"
+                    
+                    @onclick="() => { Messages.Clear(); StateHasChanged(); }"
+                >
+                    Clear
                 </button>
             </div>
         </EditForm>
@@ -199,15 +206,15 @@
 
     private string GetAvatarClass(ChatRole role)
     {
-        if (role == ChatRole.User) return "h-8 w-8 rounded-full bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center text-white text-xs font-semibold";
-        if (role == ChatRole.Assistant) return "h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-semibold";
-        if (role == ChatRole.System) return "h-8 w-8 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white text-xs font-semibold";
-        return "h-8 w-8 rounded-full bg-gray-400 flex items-center justify-center text-white text-xs font-semibold";
+        if (role == ChatRole.User) return "h-8 w-8 rounded-md bg-gradient-to-br from-green-600 to-green-400 flex items-center justify-center text-white text-xs font-semibold";
+        if (role == ChatRole.Assistant) return "h-8 w-8 rounded-md bg-gradient-to-br from-ocio-blue-600 to-ocio-blue-400 flex items-center justify-center text-white text-xs font-semibold";
+        if (role == ChatRole.System) return "h-8 w-8 rounded-md bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white text-xs font-semibold";
+        return "h-8 w-8 rounded-md bg-gray-400 flex items-center justify-center text-white text-xs font-semibold";
     }
 
     private string GetMessageBubbleClass(ChatRole role)
     {
-        if (role == ChatRole.User) return "rounded-2xl bg-blue-600 px-4 py-3 text-white shadow-md max-w-[70%] text-sm leading-relaxed";
+        if (role == ChatRole.User) return "rounded-2xl bg-ocio-blue-400 px-4 py-3 text-white shadow-md max-w-[70%] text-sm leading-relaxed";
         if (role == ChatRole.Assistant) return "rounded-2xl border border-gray-200 bg-white px-4 py-3 text-gray-900 shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 max-w-[70%] text-sm leading-relaxed";
         if (role == ChatRole.System) return "rounded-2xl bg-amber-100 px-4 py-3 text-amber-900 shadow-sm dark:bg-amber-900/40 dark:text-amber-100 max-w-[70%] text-sm leading-relaxed";
         return "rounded-2xl border border-gray-200 bg-white px-4 py-3 text-gray-900 shadow-sm max-w-[70%] text-sm leading-relaxed";
