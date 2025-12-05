@@ -9,13 +9,13 @@
 
 <PageTitle>Chat</PageTitle>
 
-<div class="flex flex-col h-[750px] max-w-5xl mx-auto p-4 gap-4">
+<div class="mx-auto flex h-[750px] max-w-5xl flex-col gap-4 p-4">
     <!-- Chat Messages Container -->
-    <div class="flex-1 overflow-hidden rounded-3xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900 shadow-sm">
-        <div @ref="_messagesContainer" class="h-full overflow-y-auto p-6 space-y-4 scroll-smooth" data-messages-container>
+    <div class="flex-1 overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900">
+        <div @ref="_messagesContainer" class="h-full space-y-4 overflow-y-auto scroll-smooth p-6" data-messages-container>
             @if (Messages.Count == 0)
             {
-                <div class="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
+                <div class="flex h-full items-center justify-center text-gray-500 dark:text-gray-400">
                     <div class="text-center">
                         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -46,17 +46,17 @@
             
             @if (IsLoading)
             {
-                <div class="flex items-end gap-3 justify-start">
+                <div class="flex items-end justify-start gap-3">
                     <div class="flex-shrink-0">
-                        <div class="h-8 w-8 rounded-md bg-gradient-to-br from-ocio-blue-600 to-ocio-blue-400 flex items-center justify-center text-white text-xs font-semibold">
+                        <div class="from-ocio-blue-600 to-ocio-blue-400 flex h-8 w-8 items-center justify-center rounded-md bg-gradient-to-br text-xs font-semibold text-white">
                             AI
                         </div>
                     </div>
                     <div class="rounded-2xl border border-gray-200 bg-white px-4 py-3 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                         <div class="flex items-center gap-1">
-                            <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
-                            <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
-                            <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+                            <div class="h-2 w-2 animate-bounce rounded-full bg-gray-400" style="animation-delay: 0ms"></div>
+                            <div class="h-2 w-2 animate-bounce rounded-full bg-gray-400" style="animation-delay: 150ms"></div>
+                            <div class="h-2 w-2 animate-bounce rounded-full bg-gray-400" style="animation-delay: 300ms"></div>
                         </div>
                     </div>
                 </div>
@@ -69,28 +69,28 @@
         <EditForm Model="@InputModel" OnValidSubmit="HandleSubmitAsync" class="relative">
             <DataAnnotationsValidator />
             <div class="flex gap-3">
-                <div class="flex-1 relative">
+                <div class="relative flex-1">
                     <textarea 
                         @bind-value="@InputModel.Message" 
                         @bind-value:event="oninput"
                         @onkeydown="HandleKeyDown"
                         placeholder="Ask the librarian a question..."
-                        class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 pr-12 resize-none focus:outline-none focus:ring-2 focus:ring-ocio-blue-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-white min-h-[56px] max-h-[200px]"
-                        rows="1" ></textarea>
+                        class="max-h-[200px] min-h-[56px] w-full resize-none rounded-xl border border-gray-300 bg-white px-4 py-3 pr-12 focus:ring-ocio-blue-500 focus:border-transparent focus:ring-2 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                        rows="1" disabled="@IsLoading"></textarea>
                 </div>
                 <button 
                     type="submit" 
                     disabled="@(IsLoading || string.IsNullOrWhiteSpace(InputModel.Message))"
-                    class="flex-shrink-0 h-[56px] w-[56px] rounded-xl bg-ocio-blue-600 hover:bg-ocio-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white flex items-center justify-center transition-colors shadow-md">
+                    class="bg-ocio-blue-600 flex h-[56px] w-[56px] flex-shrink-0 items-center justify-center rounded-xl text-white shadow-md transition-colors hover:bg-ocio-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                     </svg>
                 </button>
                 <button 
-                    class="bg-red-600 cursor-pointer text-white flex-shrink-0 h-[56px] w-[56px] rounded-xl disabled:bg-red-200 disabled:cursor-not-allowed flex items-center justify-center transition-colors shadow-md"
-                    disabled="@(Messages.Count == 0)"
+                    class="flex h-[56px] w-[56px] flex-shrink-0 cursor-pointer items-center justify-center rounded-xl bg-red-600 text-white shadow-md transition-colors disabled:cursor-not-allowed disabled:bg-red-200"
+                    disabled="@(Messages.Count == 0 || IsLoading)"
                     
-                    @onclick="() => { Messages.Clear(); StateHasChanged(); }"
+                    @onclick="() => { if (IsLoading) return; Messages.Clear(); StateHasChanged(); }"
                 >
                     Clear
                 </button>
@@ -110,6 +110,7 @@
     private ChatInputModel InputModel { get; set; } = new();
     private bool IsLoading { get; set; }
     private ElementReference _messagesContainer;
+    private CancellationTokenSource? _cts;
     
     private HttpClient ApiClient => HttpClientFactory.CreateClient(HttpClients.RagApiClient);
 
@@ -138,12 +139,14 @@
     {
         if (e.Key == "Enter" && !e.ShiftKey)
         {
+            if (IsLoading) return; // prevent double-submit
             await HandleSubmitAsync();
         }
     }
 
     private async Task HandleSubmitAsync()
     {
+        if (IsLoading) return; // prevent overlap
         if (string.IsNullOrWhiteSpace(InputModel.Message))
             return;
 
@@ -151,25 +154,49 @@
         Messages.Add(userMessage);
         
         InputModel.Message = string.Empty;
+        
+        // Cancel any in-flight chat request
+        _cts?.Cancel();
+        _cts?.Dispose();
+        _cts = new CancellationTokenSource();
+        var token = _cts.Token;
+        var currentCts = _cts;
+
         IsLoading = true;
         StateHasChanged();
 
         try
         {
             var url = "chat";
-            var response = await ApiClient.PostAsJsonAsync(url, Messages);
+            using var request = new HttpRequestMessage(HttpMethod.Post, url)
+            {
+                Content = JsonContent.Create(Messages)
+            };
+            request.Headers.Accept.Clear();
+            request.Headers.Accept.ParseAdd("application/json");
+
+            var response = await ApiClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token);
+
+            if (currentCts != _cts || currentCts.IsCancellationRequested)
+            {
+                return; // stale response
+            }
             
             if (!response.IsSuccessStatusCode)
             {
-                var errorBody = await response.Content.ReadAsStringAsync();
+                var errorBody = await response.Content.ReadAsStringAsync(token);
                 Messages.Add(new ChatMessage(
                     ChatRole.System, 
                     $"Error: {(int)response.StatusCode} {response.ReasonPhrase}\n{errorBody}"));
                 return;
             }
 
-            // API returns IEnumerable<ChatMessage>. Deserialize and append assistant/system responses.
-            var responseMessages = await response.Content.ReadFromJsonAsync<List<ChatMessage>>() ?? new List<ChatMessage>();
+            var responseMessages = await response.Content.ReadFromJsonAsync<List<ChatMessage>>(cancellationToken: token) ?? new List<ChatMessage>();
+            if (currentCts != _cts || currentCts.IsCancellationRequested)
+            {
+                return; // stale
+            }
+
             if (responseMessages.Count == 0)
             {
                 Messages.Add(new ChatMessage(ChatRole.System, "(empty response)"));
@@ -185,6 +212,17 @@
                 }
             }
         }
+        catch (TaskCanceledException)
+        {
+            if (!token.IsCancellationRequested)
+            {
+                Messages.Add(new ChatMessage(ChatRole.System, "The request timed out."));
+            }
+        }
+        catch (HttpRequestException httpEx)
+        {
+            Messages.Add(new ChatMessage(ChatRole.System, $"Network error: {httpEx.Message}"));
+        }
         catch (Exception ex)
         {
             Messages.Add(new ChatMessage(ChatRole.System, $"Unexpected error: {ex.Message}"));
@@ -192,8 +230,14 @@
         finally
         {
             IsLoading = false;
-            StateHasChanged();
+           
         }
+    }
+
+    public void Dispose()
+    {
+        _cts?.Cancel();
+        _cts?.Dispose();
     }
 
     private string GetMessageContainerClass(ChatRole role)

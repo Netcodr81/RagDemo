@@ -1,5 +1,4 @@
-﻿using System.Text;
-using RagIndexer.TextUtilities;
+﻿using RagIndexer.TextUtilities;
 using SharedKernel.Constants;
 using SharedKernel.Models;
 using EmbeddingGenerationOptions = Microsoft.Extensions.AI.EmbeddingGenerationOptions;
@@ -21,34 +20,37 @@ public class IndexingService(StringEmbeddingGenerator embeddingGenerator, Docume
         List<string> chunks;
         try
         {
-            Console.WriteLine($"[IndexingService] Beginning Semantic chunking.");
-            
+            Console.WriteLine("[IndexingService] Beginning Semantic chunking.");
+
+            // Use conservative chunk sizes to avoid oversized payloads
+            const int chunkSize = 1000;
+            const int chunkOverlap = 200;
+            const float similarityThreshold = 0.8f;
+
             chunks = (await SemanticTextSplitter.SemanticSplitAsync(
                 document,
                 embeddingGenerator,
-                chunkSize: 2000,
-                chunkOverlap: 200,
-                modelId: OllamaModels.NomicEmbedText,
-                endpoint: new Uri(OllamaModels.OllamaLocalEndpoint),
-                threshold: 0.8f,
-                groupingStrategy: GroupingStrategy.Paragraph)).ToList();
+                chunkSize,
+                chunkOverlap,
+                similarityThreshold,
+                GroupingStrategy.Paragraph)).ToList();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"[IndexingService] Semantic chunking failed: {ex.Message}. Falling back to recursive chunking.");
-            chunks = RecursiveTextSplitter.RecursiveSplit(document, 2000, 200).ToList();
+            chunks = RecursiveTextSplitter.RecursiveSplit(document, 1000, 200).ToList();
         }
 
         if (chunks.Count == 0)
         {
             // Ensure at least a single chunk
-            chunks = new List<string> {DocumentTools.CleanContent(document)};
+            chunks = new List<string> { DocumentTools.CleanContent(document) };
         }
 
         Console.WriteLine($"[IndexingService] Chunk count: {chunks.Count}");
 
         Console.WriteLine($"[IndexingService] Beginning embedding generation and indexing.");
-        
+
         for (int index = 0; index < chunks.Count; index++)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -56,10 +58,16 @@ public class IndexingService(StringEmbeddingGenerator embeddingGenerator, Docume
             var content = DocumentTools.CleanContent(chunks[index]);
             if (string.IsNullOrWhiteSpace(content)) continue;
 
+            // Guard on max content length to avoid server-side 500s from oversized inputs
+            if (content.Length > 8000)
+            {
+                content = content.Substring(0, 8000);
+            }
+
             IReadOnlyList<Microsoft.Extensions.AI.Embedding<float>> embeddings;
             try
             {
-                embeddings = await embeddingGenerator.GenerateAsync(new[] {content}, new EmbeddingGenerationOptions
+                embeddings = await embeddingGenerator.GenerateAsync(new[] { content }, new EmbeddingGenerationOptions
                 {
                     Dimensions = EmbeddingDimensions
                 }, cancellationToken);
@@ -77,19 +85,20 @@ public class IndexingService(StringEmbeddingGenerator embeddingGenerator, Docume
             }
 
             var vector = embeddings[0];
-            if (vector.Vector.Length == 0)
+            var vecArray = vector.Vector.ToArray();
+            if (vecArray.Length != EmbeddingDimensions)
             {
-                Console.WriteLine($"[IndexingService] Empty embedding for chunk {index}. Skipping.");
+                Console.WriteLine($"[IndexingService] Invalid embedding length for chunk {index}. Expected {EmbeddingDimensions}, got {vecArray.Length}. Skipping.");
                 continue;
             }
 
             var documentVector = new DocumentVector
             {
                 Id = Guid.NewGuid(),
-                DocumentName = $"{documentTitle}.pdf" ?? "Unknown Document",
-                Author = author ?? "Unknown Author",
+                DocumentName = string.IsNullOrWhiteSpace(documentTitle) ? "Unknown Document" : documentTitle,
+                Author = string.IsNullOrWhiteSpace(author) ? "Unknown Author" : author,
                 Content = content,
-                Embedding = vector.Vector.ToArray()
+                Embedding = vecArray
             };
 
             try

@@ -14,7 +14,7 @@ public enum GroupingStrategy
 
 public static class SemanticTextSplitter
 {
-    public static async Task<IEnumerable<string>> SemanticSplitAsync(this string text, IEmbeddingGenerator<string, Embedding<float>> embeddingGenerator, int chunkSize, int chunkOverlap, string modelId, Uri endpoint,
+    public static async Task<IEnumerable<string>> SemanticSplitAsync(this string text, IEmbeddingGenerator<string, Embedding<float>> embeddingGenerator, int chunkSize, int chunkOverlap,
         float threshold, GroupingStrategy groupingStrategy = GroupingStrategy.Paragraph)
     {
         var textBlocks = groupingStrategy == GroupingStrategy.Paragraph

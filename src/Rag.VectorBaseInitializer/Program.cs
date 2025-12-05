@@ -1,14 +1,11 @@
-﻿using System.Net.Http;
-using System.Text.RegularExpressions;
-using Microsoft.Extensions.AI;
+﻿using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Qdrant.Client;
 using Qdrant.Client.Grpc;
 using RagIndexer;
 using SharedKernel.Constants;
-using SharedKernel.Models;
-using Telerik.Windows.Documents.Fixed.FormatProviders.Pdf;
+
 
 var ollamaUri = new Uri("http://localhost:11434");
 
@@ -30,21 +27,21 @@ builder.Services.AddSingleton<DocumentVectorStore>();
 var app = builder.Build();
 
 var indexingService = app.Services.GetRequiredService<IndexingService>();
-var quadrantClient = app.Services.GetRequiredService<QdrantClient>();
+var qdrantClient = app.Services.GetRequiredService<QdrantClient>();
 
 var isOllamaReady = await EnsureOllamaReadyAsync(ollamaUri, OllamaModels.NomicEmbedText, CancellationToken.None);
 
-var collectionExists = await quadrantClient.CollectionExistsAsync(VectorDbCollections.DocumentVectors);
+var collectionExists = await qdrantClient.CollectionExistsAsync(VectorDbCollections.DocumentVectors);
 
-if(!collectionExists)
+if (!collectionExists)
 {
-    await quadrantClient.CreateCollectionAsync(collectionName: VectorDbCollections.DocumentVectors, vectorsConfig: new VectorParams
+    // Create collection with expected vector size and cosine distance
+    await qdrantClient.CreateCollectionAsync(collectionName: VectorDbCollections.DocumentVectors, vectorsConfig: new VectorParams
     {
         Size = (ulong)OllamaModels.NomicEmbedTextDimensions,
         Distance = Distance.Cosine
     });
 }
-
 
 var mdDir = Path.Combine(Directory.GetCurrentDirectory(), "Markdown");
 
@@ -70,10 +67,10 @@ foreach (var filePath in mdFilesList)
     {
         var document = await File.ReadAllTextAsync(filePath);
         var title = Path.GetFileNameWithoutExtension(filePath); // simple title from filename
-        var author = GetAuthor(title) ?? "Unknown"; 
+        var author = GetAuthor(title) ?? "Unknown";
 
         Console.WriteLine($"Starting indexing for {title}");
-        
+
         await indexingService.BuildDocumentIndex(document, title, author);
 
         Console.WriteLine($"Completed embedding extraction for '{title}' ({Path.GetFileName(filePath)}).");
