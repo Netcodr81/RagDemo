@@ -1,8 +1,11 @@
-﻿using RagIndexer.TextUtilities;
+﻿using Microsoft.SemanticKernel.Embeddings;
+using Microsoft.SemanticKernel.Text;
+
+using SemanticChunkerNET;
 using SharedKernel.Constants;
 using SharedKernel.Models;
 using EmbeddingGenerationOptions = Microsoft.Extensions.AI.EmbeddingGenerationOptions;
-
+#pragma warning disable SKEXP0050
 namespace RagIndexer;
 
 public class IndexingService(StringEmbeddingGenerator embeddingGenerator, DocumentVectorStore vectorStore)
@@ -22,82 +25,83 @@ public class IndexingService(StringEmbeddingGenerator embeddingGenerator, Docume
         {
             Console.WriteLine("[IndexingService] Beginning Semantic chunking.");
 
-            // Use conservative chunk sizes to avoid oversized payloads
-            const int chunkSize = 1000;
-            const int chunkOverlap = 200;
-            const float similarityThreshold = 0.8f;
-
-            chunks = (await SemanticTextSplitter.SemanticSplitAsync(
-                document,
+           var semanticChunker = new SemanticChunker(
                 embeddingGenerator,
-                chunkSize,
-                chunkOverlap,
-                similarityThreshold,
-                GroupingStrategy.Paragraph)).ToList();
+                tokenLimit: 512,
+                thresholdType: BreakpointThresholdType.Percentile
+                );
+
+            var chunkedData = await semanticChunker.CreateChunksAsync(document);
+            chunks = chunkedData.Select(c => c.Text).ToList();
+
+
         }
         catch (Exception ex)
         {
             Console.WriteLine($"[IndexingService] Semantic chunking failed: {ex.Message}. Falling back to recursive chunking.");
-            chunks = RecursiveTextSplitter.RecursiveSplit(document, 1000, 200).ToList();
+            const int maxCharsPerChunk = 1200;
+            const int overlapChars = 200;
+
+            chunks = TextChunker
+                .SplitPlainTextParagraphs([document], maxCharsPerChunk, overlapChars)
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .Select(s => s.Trim())
+                .ToList();
         }
 
-        if (chunks.Count == 0)
-        {
-            // Ensure at least a single chunk
-            chunks = new List<string> { DocumentTools.CleanContent(document) };
-        }
 
         Console.WriteLine($"[IndexingService] Chunk count: {chunks.Count}");
 
         Console.WriteLine($"[IndexingService] Beginning embedding generation and indexing.");
 
-        for (int index = 0; index < chunks.Count; index++)
+       Console.WriteLine($"[IndexingService] Chunk count: {chunks.Count}");
+        Console.WriteLine("[IndexingService] Beginning embedding generation and indexing.");
+
+        var safeTitle = string.IsNullOrWhiteSpace(documentTitle) ? "Unknown Document" : documentTitle.Trim();
+        var safeAuthor = string.IsNullOrWhiteSpace(author) ? "Unknown Author" : author.Trim();
+
+        foreach (var chunk in chunks)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var content = DocumentTools.CleanContent(chunks[index]);
-            if (string.IsNullOrWhiteSpace(content)) continue;
-
-            // Guard on max content length to avoid server-side 500s from oversized inputs
-            if (content.Length > 8000)
-            {
-                content = content.Substring(0, 8000);
-            }
+            var searchText =
+                $"Title: {safeTitle}\n" +
+                $"Author: {safeAuthor}\n\n" +
+                chunk;
 
             IReadOnlyList<Microsoft.Extensions.AI.Embedding<float>> embeddings;
             try
             {
-                embeddings = await embeddingGenerator.GenerateAsync(new[] { content }, new EmbeddingGenerationOptions
-                {
-                    Dimensions = EmbeddingDimensions
-                }, cancellationToken);
+                embeddings = await embeddingGenerator.GenerateAsync(
+                    new[] { searchText },
+                    new EmbeddingGenerationOptions { Dimensions = EmbeddingDimensions },
+                    cancellationToken);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[IndexingService] Embedding generation failed for chunk {index}: {ex.Message}");
+                Console.WriteLine($"[IndexingService] Embedding generation failed: {ex.Message}");
                 continue;
             }
 
             if (embeddings.Count == 0)
             {
-                Console.WriteLine($"[IndexingService] No embedding returned for chunk {index}. Skipping.");
+                Console.WriteLine("[IndexingService] No embedding returned. Skipping.");
                 continue;
             }
 
-            var vector = embeddings[0];
-            var vecArray = vector.Vector.ToArray();
+            var vecArray = embeddings[0].Vector.ToArray();
             if (vecArray.Length != EmbeddingDimensions)
             {
-                Console.WriteLine($"[IndexingService] Invalid embedding length for chunk {index}. Expected {EmbeddingDimensions}, got {vecArray.Length}. Skipping.");
+                Console.WriteLine($"[IndexingService] Invalid embedding length. Expected {EmbeddingDimensions}, got {vecArray.Length}. Skipping.");
                 continue;
             }
 
             var documentVector = new DocumentVector
             {
                 Id = Guid.NewGuid(),
-                DocumentName = string.IsNullOrWhiteSpace(documentTitle) ? "Unknown Document" : documentTitle,
-                Author = string.IsNullOrWhiteSpace(author) ? "Unknown Author" : author,
-                Content = content,
+                DocumentName = safeTitle,
+                Author = safeAuthor,
+                Content = chunk,
                 Embedding = vecArray
             };
 
@@ -107,7 +111,7 @@ public class IndexingService(StringEmbeddingGenerator embeddingGenerator, Docume
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[IndexingService] Upsert failed for chunk {index}: {ex.Message}");
+                Console.WriteLine($"[IndexingService] Upsert failed: {ex.Message}");
             }
         }
 

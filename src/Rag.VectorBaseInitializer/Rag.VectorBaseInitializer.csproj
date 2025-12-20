@@ -18,6 +18,7 @@
         <PackageReference Include="Microsoft.SemanticKernel.Connectors.Ollama" Version="1.68.0-alpha" />
         <PackageReference Include="Microsoft.SemanticKernel.Connectors.PgVector" Version="1.68.0-preview" />     
         <PackageReference Include="Microsoft.SemanticKernel" Version="1.68.0" />     
+        <PackageReference Include="SemanticChunker.NET" Version="1.1.0" />     
     </ItemGroup>
     
     <ItemGroup>
