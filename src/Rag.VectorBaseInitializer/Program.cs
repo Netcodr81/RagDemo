@@ -1,47 +1,50 @@
 ﻿using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.VectorData;
 using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.Connectors.PgVector;
 using Qdrant.Client;
 using Qdrant.Client.Grpc;
 using RagIndexer;
 using SharedKernel.Constants;
+using SharedKernel.Models;
 
 
 var ollamaUri = new Uri("http://localhost:11434");
+var vectorDbConnectionString = "Host=localhost;Port=5432;Database=vector_db;Username=postgres;Password=postgres";
 
 var builder = Kernel.CreateBuilder();
 
 builder.AddOllamaChatCompletion(OllamaModels.Llama32_1b, ollamaUri);
 builder.AddOllamaTextGeneration(OllamaModels.Llama32_1b, ollamaUri);
+builder.AddOllamaChatClient(OllamaModels.Llama32_1b, ollamaUri);
 builder.AddOllamaEmbeddingGenerator(OllamaModels.NomicEmbedText, ollamaUri);
 
-builder.Services.AddSingleton<QdrantClient>(options => new QdrantClient("localhost"));
-builder.Services.AddQdrantVectorStore("localhost");
+builder.Services.AddPostgresVectorStore(connectionString: vectorDbConnectionString);
+
+
 
 builder.Services.AddLogging();
 
 
-builder.Services.AddSingleton<IndexingService>();
+builder.Services.AddTransient<IndexingService>();
 builder.Services.AddSingleton<DocumentVectorStore>();
 
 var app = builder.Build();
 
 var indexingService = app.Services.GetRequiredService<IndexingService>();
-var qdrantClient = app.Services.GetRequiredService<QdrantClient>();
+var vectorStore = app.Services.GetRequiredService<VectorStore>();
+
+var collection = vectorStore.GetCollection<Guid, DocumentVector>(VectorDbCollections.DocumentVectors);
+await collection.EnsureCollectionExistsAsync();
 
 var isOllamaReady = await EnsureOllamaReadyAsync(ollamaUri, OllamaModels.NomicEmbedText, CancellationToken.None);
 
-var collectionExists = await qdrantClient.CollectionExistsAsync(VectorDbCollections.DocumentVectors);
-
-if (!collectionExists)
+if (!isOllamaReady)
 {
-    // Create collection with expected vector size and cosine distance
-    await qdrantClient.CreateCollectionAsync(collectionName: VectorDbCollections.DocumentVectors, vectorsConfig: new VectorParams
-    {
-        Size = (ulong)OllamaModels.NomicEmbedTextDimensions,
-        Distance = Distance.Cosine
-    });
+    throw new InvalidOperationException($"Ollama service at {ollamaUri} is not ready or does not have the required model '{OllamaModels.NomicEmbedText}' available.");
 }
+
 
 var mdDir = Path.Combine(Directory.GetCurrentDirectory(), "Markdown");
 
