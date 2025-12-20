@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.AI;
 using Microsoft.Extensions.VectorData;
-using Qdrant.Client;
-using Qdrant.Client.Grpc;
 using SharedKernel.Constants;
 using SharedKernel.Models;
 
@@ -12,7 +10,8 @@ public class DocumentVectorStore(VectorStore vectorStore)
     public async Task UpsertAsync(DocumentVector vector)
     {
         var collection = vectorStore.GetCollection<Guid, DocumentVector>(VectorDbCollections.DocumentVectors);
-        // Validate embedding to avoid corrupt zero-length vectors in Qdrant
+
+        // Validate embedding to avoid persisting corrupt / wrong-dimension vectors into the configured VectorStore.
         ArgumentNullException.ThrowIfNull(vector);
         
         if (vector.Embedding is null || vector.Embedding.Length == 0)

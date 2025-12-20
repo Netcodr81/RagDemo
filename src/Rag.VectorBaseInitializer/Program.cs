@@ -2,9 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.VectorData;
 using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.Connectors.PgVector;
-using Qdrant.Client;
-using Qdrant.Client.Grpc;
 using RagIndexer;
 using SharedKernel.Constants;
 using SharedKernel.Models;

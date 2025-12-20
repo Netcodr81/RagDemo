@@ -1,24 +1,28 @@
 ﻿using Microsoft.Extensions.AI;
-using Qdrant.Client;
+using Microsoft.Extensions.VectorData;
 using SharedKernel.Constants;
 using SharedKernel.Models;
 
 namespace SemanticSearchApi.Services;
 
-// <summary>
-/// Strongly typed search abstraction over Qdrant for DocumentVector records.
+/// <summary>
+/// HyDE variant of vector search: generate a short hypothetical answer (HyDE) and embed that for retrieval.
+/// Uses the configured <see cref="VectorStore"/> (Postgres/pgvector in this solution).
 /// </summary>
-public class DocumentVectorSearchWithHydeService(StringEmbeddingGenerator embeddingGenerator, QdrantClient qdrantClient, IChatClient chatClient, ChatOptions chatOptions, PromptService promptService)
+public class DocumentVectorSearchWithHydeService(StringEmbeddingGenerator embeddingGenerator, VectorStore vectorStore, IChatClient chatClient, ChatOptions chatOptions, PromptService promptService)
 {
     /// <summary>
-    /// Performs a semantic vector similarity search against the document collection.
+    /// Performs a semantic vector similarity search against the document collection using HyDE.
     /// </summary>
     /// <param name="query">Natural language query text.</param>
     /// <param name="topK">Maximum number of results to return.</param>
-    /// <param name="includeEmbedding">True to include stored vector in results (uses withVectors:true).</param>
+    /// <param name="includeEmbedding">True to include stored vectors in results (may increase payload size).</param>
+    /// <param name="cancellationToken">Cancellation token for the request.</param>
     /// <returns>List of matching DocumentVector records with scores, ordered by similarity score (highest first).</returns>
-    public async Task<IReadOnlyList<DocumentVectorSearchResult>> SearchAsync(string query, int topK = 5, bool includeEmbedding = false)
+    public async Task<IReadOnlyList<DocumentVectorSearchResult>> SearchAsync(string query, int topK = 5, bool includeEmbedding = false, CancellationToken cancellationToken = default)
     {
+        var collection = vectorStore.GetCollection<Guid, DocumentVector>(VectorDbCollections.DocumentVectors);
+        
         if (string.IsNullOrWhiteSpace(query))
         {
             return Array.Empty<DocumentVectorSearchResult>();
@@ -35,28 +39,30 @@ public class DocumentVectorSearchWithHydeService(StringEmbeddingGenerator embedd
 
         var queryVector = embedding[0].Vector.ToArray();
 
-        var results = await qdrantClient.SearchAsync(
-            collectionName: VectorDbCollections.DocumentVectors,
-            vector: queryVector,
-            limit: (uint) topK
-        );
-
-        var mapped = new List<DocumentVectorSearchResult>(results.Count);
-        foreach (var r in results)
+        var results = collection.SearchAsync(queryVector, top: topK, new VectorSearchOptions<DocumentVector>
         {
+            IncludeVectors = includeEmbedding
+        }, cancellationToken: cancellationToken);
+
+        var mapped = new List<DocumentVectorSearchResult>();
+        
+        await foreach (var r in results)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var model = new DocumentVector
             {
-                Id = Guid.Parse(r.Id.Uuid),
-                DocumentName = r.Payload.TryGetValue("document_name", out var docName) ? docName.StringValue : string.Empty,
-                Author = r.Payload.TryGetValue("author", out var author) ? author.StringValue : string.Empty,
-                Content = r.Payload.TryGetValue("content", out var content) ? content.StringValue : string.Empty,
-                Embedding = includeEmbedding && r.Vectors?.Vector?.Data != null ? r.Vectors.Vector.Data.ToArray() : null
+                Id = r.Record.Id,
+                DocumentName = r.Record.DocumentName ?? string.Empty,
+                Author = r.Record.Author ?? string.Empty,
+                Content = r.Record.Content ?? string.Empty,
+                Embedding = r.Record.Embedding
             };
-
+            
             mapped.Add(new DocumentVectorSearchResult
             {
                 Document = model,
-                Score = r.Score
+                Score = r.Score ?? 0
             });
         }
 

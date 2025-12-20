@@ -1,7 +1,6 @@
 using Carter;
 using Microsoft.Extensions.AI;
 using Microsoft.SemanticKernel;
-using Qdrant.Client;
 using Scalar.AspNetCore;
 using SemanticSearchApi.Registries;
 using SemanticSearchApi.Services;
@@ -25,14 +24,14 @@ builder.Services.AddCors(options =>
 });
 
 var ollamaUri = new Uri(builder.Configuration.GetValue<string>("OllamaUri"));
+var vectorDbConnectionString = "Host=localhost;Port=5432;Database=vector_db;Username=postgres;Password=postgres";
 
 builder.Services.AddOllamaChatCompletion(OllamaModels.Llama32_1b, ollamaUri);
 builder.Services.AddOllamaTextGeneration(OllamaModels.Llama32_1b, ollamaUri);
 builder.Services.AddOllamaEmbeddingGenerator(OllamaModels.NomicEmbedText, ollamaUri);
 builder.Services.AddOllamaChatClient(OllamaModels.Llama32_1b, ollamaUri);
 
-builder.Services.AddSingleton<QdrantClient>(options => new QdrantClient("localhost"));
-builder.Services.AddQdrantVectorStore("localhost");
+builder.Services.AddPostgresVectorStore(connectionString: vectorDbConnectionString);
 builder.Services.AddSingleton<DocumentVectorSearchService>();
 builder.Services.AddSingleton<RagQuestionService>();
 builder.Services.AddSingleton<DocumentVectorSearchWithHydeService>();
