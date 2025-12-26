@@ -1,7 +1,10 @@
 ﻿
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.VectorData;
 using Microsoft.SemanticKernel;
+using OllamaSharp;
 using RagIndexer;
 using SharedKernel.Constants;
 using SharedKernel.Models;
@@ -10,12 +13,10 @@ using SharedKernel.Models;
 var ollamaUri = new Uri("http://localhost:11434");
 var vectorDbConnectionString = "Host=localhost;Port=5432;Database=vector_db;Username=postgres;Password=postgres";
 
-var builder = Kernel.CreateBuilder();
+var builder = Host.CreateApplicationBuilder();
 
-builder.AddOllamaChatCompletion(OllamaModels.Llama32_1b, ollamaUri);
-builder.AddOllamaTextGeneration(OllamaModels.Llama32_1b, ollamaUri);
-builder.AddOllamaChatClient(OllamaModels.Llama32_1b, ollamaUri);
-builder.AddOllamaEmbeddingGenerator(OllamaModels.NomicEmbedText, ollamaUri);
+builder.Services.AddChatClient(new OllamaApiClient(ollamaUri, OllamaModels.Llama32_1b));
+builder.Services.AddEmbeddingGenerator(new OllamaApiClient(ollamaUri, OllamaModels.NomicEmbedText));
 
 builder.Services.AddPostgresVectorStore(connectionString: vectorDbConnectionString);
 

@@ -47,6 +47,22 @@ This starts Postgres at `localhost:5432`.
 
 > Note: `docker-compose.yml` mounts `./postgres/schema.sql` into `/docker-entrypoint-initdb.d/`. If you haven’t created the schema file yet, the container will still run, but tables/extension may not be initialized.
 
+If you haven't initialized the vector extensions for Postgres yet, run the following command after connecting to the database
+```sql
+CREATE EXTENSION IF NOT EXISTS vector;
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+```
+Then run the following to create the required table:
+```sql
+CREATE TABLE IF NOT EXISTS documents (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  document_name text,
+  author text,
+  content text,
+  document_embedding vector(768)
+);
+```
+
 ## 2. Install & Pull Ollama Models
 Install Ollama (see link above) then pull required models:
 ```powershell
